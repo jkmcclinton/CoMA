@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ElevatorScript : MonoBehaviour {
+public class DoorScript : MonoBehaviour {
 
-	private bool touchingElevator = false;
+	private bool touchingDoor = false;
 	private Animator anim;
 
 	void Start(){
@@ -13,26 +13,26 @@ public class ElevatorScript : MonoBehaviour {
 
 	void Update () {
 		// Player activates elevator.
-		if ((Input.GetKeyDown (KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && touchingElevator) {
+		if ((Input.GetKeyDown (KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && touchingDoor) {
 			Debug.Log ("Moving up!");
-			anim.SetTrigger ("Elevator");
+			anim.SetTrigger ("Door");
 			TransportPlayer ();
 		}
 	}
 	
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.tag == "Player") {
-			touchingElevator = true;
+			touchingDoor = true;
 		}
 	}
 
 	void OnTriggerExit2D(Collider2D other) {
 		if (other.tag == "Player") {
-			touchingElevator = false;
+			touchingDoor = false;
 		}
 	}
 
 	void TransportPlayer() {
-		GameObject.FindGameObjectWithTag ("Player").transform.position;
+		//GameObject.FindGameObjectWithTag ("Player").transform.position;
 	}
 }
