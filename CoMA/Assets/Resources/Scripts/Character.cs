@@ -6,7 +6,7 @@ public class Character : MonoBehaviour {
 	public CharacterClass type = CharacterClass.bibleThumper;
     public LevelController level;
     public const int MOOD_RANGE = 10;
-    public const int SPEED = 20;
+    public const int SPEED = 5;
 
     [Range(-MOOD_RANGE, MOOD_RANGE)]
 	public int mood = 0; // [-10, 10], [sad, happy]. 0 = Neutral
@@ -19,7 +19,28 @@ public class Character : MonoBehaviour {
 	public bool beingInfected = false;
 
 	public virtual void Start () {
+		switch (type) {
+		default:
+		case CharacterClass.normie:
+			defaultMood = 0;
+			secondsBetweenRegens = 10f;
+			break;
+		case CharacterClass.player:
+			defaultMood = -10;
+			secondsBetweenRegens = 10f;
+			break;
+		case CharacterClass.bibleThumper:
+			defaultMood = 10;
+			secondsBetweenRegens = 0.1f;
+			break;
+		case CharacterClass.meanie:
+			defaultMood = -10;
+			secondsBetweenRegens = 0.1f;
+			break;
+		}
+			
         this.level = GameObject.FindObjectOfType<LevelController>();
+
 		StartCoroutine (RegenMood ());
 	}
 
@@ -58,11 +79,13 @@ public class Character : MonoBehaviour {
 		} else {
 			StopCoroutine ("Infect");
 			beingInfected = false;
+			GetComponent<BaseMovement> ().canMove = true;
 		}
 	}
 
 	public IEnumerator Infect (bool decrement) {
 		beingInfected = true;
+		GetComponent<BaseMovement> ().canMove = false;
 
 		while (true) {
 			yield return new WaitForSeconds (2f);
@@ -77,7 +100,7 @@ public class Character : MonoBehaviour {
 
 	public enum CharacterClass
 	{
-		bibleThumper, fatty, bolemic, shwifty, nifty, sugar, spice, everythingNice
+		player, bibleThumper, normie, meanie
 	}
 
 }
