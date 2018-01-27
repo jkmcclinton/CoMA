@@ -19,25 +19,26 @@ public class Character : MonoBehaviour {
 	public bool beingInfected = false;
 
 	public virtual void Start () {
-		switch (type) {
-		default:
-		case CharacterClass.normie:
-			defaultMood = 0;
-			secondsBetweenRegens = 10f;
-			break;
-		case CharacterClass.player:
-			defaultMood = -10;
-			secondsBetweenRegens = 10f;
-			break;
-		case CharacterClass.bibleThumper:
-			defaultMood = 10;
-			secondsBetweenRegens = 0.1f;
-			break;
-		case CharacterClass.meanie:
-			defaultMood = -10;
-			secondsBetweenRegens = 0.1f;
-			break;
-		}
+//		switch (type) {
+//		case CharacterClass.normie:
+//			defaultMood = 0;
+//			secondsBetweenRegens = 10f;
+//			break;
+//		case CharacterClass.player:
+//			defaultMood = -10;
+//			secondsBetweenRegens = 10f;
+//			break;
+//		case CharacterClass.bibleThumper:
+//			defaultMood = 10;
+//			secondsBetweenRegens = 0.1f;
+//			break;
+//		case CharacterClass.meanie:
+//			defaultMood = -10;
+//			secondsBetweenRegens = 0.1f;
+//			break;
+//		default:
+//			print ("Error: Character Class not recognized.");
+//		}
 			
         this.level = GameObject.FindObjectOfType<LevelController>();
 
@@ -103,4 +104,9 @@ public class Character : MonoBehaviour {
 		player, bibleThumper, normie, meanie
 	}
 
+
+	public virtual void OnGUI () {
+		//Vector2 origin = transform.position;
+		//GUI.TextField(new Rect((Vector2)Camera.main.WorldToScreenPoint(transform.position), Vector2.one * 20), mood.ToString());
+	}
 }
