@@ -254,7 +254,24 @@ public class LevelController : MonoBehaviour {
     }
 
 	public bool[,] generateNavMap(){
-		bool[,] navMap = new bool[10, 10];
+		Vector2 originPoint = parallax.origin; Vector2 boundary = parallax.length;
+		float boundaryX = boundary.x / 10.0f; float boundaryY = boundary.y / 10.0f;
+
+		bool[,] navMap = new bool[Mathf.RoundToInt(Mathf.Abs(boundaryX)), Mathf.RoundToInt(Mathf.Abs(boundaryY))];
+
+		GameObject boxTester = GameObject.Instantiate (Resources.Load ("Prefabs/Scanline") as GameObject);
+		boxTester.transform.position = originPoint;
+		boxTester.transform.position += new Vector3(5, 5, 0);
+
+		for (int x = 0; x < navMap.GetLength (0); x++) {
+			for (int y = 0; y < navMap.GetLength (1); y++) {
+
+				boxTester.transform.position += new Vector3(10 * x, 10 * y, 0);
+				navMap [x, y] = false;
+				navMap [x, y] = true;
+			}
+		}
+
 		return navMap;
 	}
 }
