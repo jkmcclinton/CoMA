@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AIMovement : MonoBehaviour {
+public class AIMovement : BaseMovement {
 
 	public float time = 0.0f;
 	public float timePeriod = 5.0f;
@@ -15,6 +15,9 @@ public class AIMovement : MonoBehaviour {
 	}
 
 	void Update(){
+		if (!canMove)
+			return;
+
 		time += Time.deltaTime;
 
 		if (time > timePeriod) {

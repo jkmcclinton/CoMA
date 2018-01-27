@@ -2,18 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour{
+public class PlayerMovement : BaseMovement {
 
-	//private Rigidbody2D playerBody;
-
-	// Use this for initialization
-	void Start () {
-		Debug.Log ("PlayerMovement loaded successfully.");
-	}
+	public LayerMask groundMask;
 
 	// Checks every frame.
 	void Update () {
-		var move = new Vector3(Input.GetAxisRaw("Horizontal"), 0, 0).normalized * 5;
-		transform.position += move * Time.deltaTime;
+		if (!canMove)
+			return;
+		
+		var move = new Vector3(Input.GetAxisRaw("Horizontal"), 0, 0).normalized * 7;
+
+		//transform.position += move * Time.deltaTime;
+
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			if (Physics2D.Raycast (transform.position, Vector2.down, 0.55f, groundMask)) {
+				GetComponent<Rigidbody2D> ().AddForce (Vector2.up * 700);
+			}
+		}
 	}
 }

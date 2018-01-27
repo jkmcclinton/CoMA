@@ -14,6 +14,26 @@ public class Character : MonoBehaviour {
 	public bool beingInfected = false;
 
 	public virtual void Start () {
+		switch (type) {
+		default:
+		case CharacterClass.normie:
+			defaultMood = 0;
+			secondsBetweenRegens = 10f;
+			break;
+		case CharacterClass.player:
+			defaultMood = -10;
+			secondsBetweenRegens = 10f;
+			break;
+		case CharacterClass.bibleThumper:
+			defaultMood = 10;
+			secondsBetweenRegens = 0.1f;
+			break;
+		case CharacterClass.meanie:
+			defaultMood = -10;
+			secondsBetweenRegens = 0.1f;
+			break;
+		}
+
 		StartCoroutine (RegenMood ());
 	}
 
@@ -49,11 +69,13 @@ public class Character : MonoBehaviour {
 		} else {
 			StopCoroutine ("Infect");
 			beingInfected = false;
+			GetComponent<BaseMovement> ().canMove = true;
 		}
 	}
 
 	public IEnumerator Infect (bool decrement) {
 		beingInfected = true;
+		GetComponent<BaseMovement> ().canMove = false;
 
 		while (true) {
 			yield return new WaitForSeconds (2f);
@@ -68,7 +90,7 @@ public class Character : MonoBehaviour {
 
 	public enum CharacterClass
 	{
-		bibleThumper, fatty, bolemic, shwifty, nifty, sugar, spice, everythingNice
+		player, bibleThumper, normie, meanie
 	}
 
 }
