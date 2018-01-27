@@ -27,4 +27,9 @@ public class CanvasController : MonoBehaviour {
         Neg.fillAmount = -Mathf.Clamp(val, -1, 0);
         Pos.fillAmount = Mathf.Clamp(val, 0, 1);
     }
+
+    public void Notify() {
+        lc.runMe();
+        FindObjectOfType<PlayerMovement>().canMove = true;
+    }
 }

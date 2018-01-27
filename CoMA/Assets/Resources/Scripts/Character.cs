@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Character : MonoBehaviour {
-	public CharacterClass type = CharacterClass.bibleThumper;
+	public CharacterClass type = CharacterClass.normie;
     public LevelController level;
     public const int MOOD_RANGE = 10;
     public const int SPEED = 5;
@@ -109,4 +109,5 @@ public class Character : MonoBehaviour {
 		//Vector2 origin = transform.position;
 		//GUI.TextField(new Rect((Vector2)transform.position, Vector2.one * 20), mood.ToString());
 	}
+
 }

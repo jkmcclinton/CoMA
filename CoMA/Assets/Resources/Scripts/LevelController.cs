@@ -19,6 +19,8 @@ public class LevelController : MonoBehaviour {
     private List<Character> NPCs;
     private Sprite[] attributes;
 
+    public void runMe() { gameRunning = true; }
+
     /// <summary> players maximum possible mood required to cause "Death" condition </summary>
     private const int MAX_LOSE = Character.MOOD_RANGE;
     /// <summary> absolute maximum possible average mood required to cause "Tie" condition </summary>
@@ -40,6 +42,14 @@ public class LevelController : MonoBehaviour {
     public float LevelScore {
         get { return score; }
     }
+    
+    public LevelController(LCState state) {
+        this.lcState = state;
+    }
+
+    [HideInInspector]
+    public LCState lcState;
+    public enum LCState { StartGame, SwitchScene, Doso}
 
 	// Use this for initialization
 	void Start () {
@@ -48,32 +58,34 @@ public class LevelController : MonoBehaviour {
         NPCs = new List<Character>();
         attributes = Resources.LoadAll<Sprite>("Sprites/CoMA People");
         player = GameObject.Find("Player");
+        player.GetComponent<PlayerMovement>().canMove = false;
         if (reference!=null) SpawnPeople();
-
         gameTimer = LevelTime;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (gameTimer >= 0 && gameRunning) {
-
+            if (gameRunning) { 
             // Game-ending checks
 
             gameTimer -= Time.deltaTime;
-            // Timeover conditions
-            if (gameTimer <= 0) {
-                if (Mathf.Abs(score) <= TIE_THRESHOLD) {
-                    // game is tied! no one wins!
+                // Timeover conditions
+                if (gameTimer <= 0) {
+                    if (Mathf.Abs(score) <= TIE_THRESHOLD) {
+                        // game is tied! no one wins!
 
-                    // sudden death?
-                } else if (score > TIE_THRESHOLD) {
-                    // enemy wins! majority is happy!
-                } else if (score < TIE_THRESHOLD) {
-                    // player wins!!! majority is fucked!
+                        // sudden death?
+                    } else if (score > TIE_THRESHOLD) {
+                        // enemy wins! majority is happy!
+                    } else if (score < TIE_THRESHOLD) {
+                        // player wins!!! majority is fucked!
+
+                    }
+
+                    // endGame
+                    EndGame();
                 }
-
-                // endGame
-                EndGame();
             }
 
             if (player.GetComponent<Character>().mood >= MAX_LOSE) {
@@ -109,7 +121,15 @@ public class LevelController : MonoBehaviour {
     }
 
     public void notify() {
-        // transition to next Scene
+        switch (lcState) {
+            case LCState.SwitchScene:
+                // transition to next Scene
+                break;
+            case LCState.StartGame:
+                SplashController splash = FindObjectOfType<SplashController>();
+                splash.GetComponent<Animator>().SetTrigger("StartSplash");
+                break;
+        }
     }
 
     // Spawn NPCs in random cubicles, randomize attributes
