@@ -20,7 +20,7 @@ public class Infect : MonoBehaviour {
 	void FixedUpdate () {
 		targets = Physics2D.OverlapCircleAll (transform.position, infectRadius, infectMask);
 
-		if (Input.GetKey (KeyCode.E)) {
+		if (Input.GetButton ("CloseAttack")) {
 			float minDist = Mathf.Infinity;
 
 			//If there is already a target, don't find a new one

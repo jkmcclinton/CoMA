@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class Character : MonoBehaviour {
 	public CharacterClass type = CharacterClass.bibleThumper;
+    public LevelController level;
+    public const int MOOD_RANGE = 10;
+    public const int SPEED = 5;
 
+    [Range(-MOOD_RANGE, MOOD_RANGE)]
 	public int mood = 0; // [-10, 10], [sad, happy]. 0 = Neutral
-	public int defaultMood = 0;
-
+    [Range(-MOOD_RANGE, MOOD_RANGE)]
+    public int defaultMood = 0;
+    
 	public float secondsBetweenRegens = 10f;
 	public float secondsElapsed = 0f;
 
@@ -33,6 +38,8 @@ public class Character : MonoBehaviour {
 			secondsBetweenRegens = 0.1f;
 			break;
 		}
+			
+        this.level = GameObject.FindObjectOfType<LevelController>();
 
 		StartCoroutine (RegenMood ());
 	}
@@ -56,6 +63,9 @@ public class Character : MonoBehaviour {
 
 			if (mood != defaultMood) {
 				mood += (int)Mathf.Sign (defaultMood - mood);
+
+                //level.TallyAgonyConversion();
+                //level.TallyJoyConversion();
 			}
 		}
 	}
@@ -82,7 +92,7 @@ public class Character : MonoBehaviour {
 			if (!beingInfected)
 				break;
 
-			if (Mathf.Abs (mood) < 10) {
+			if (Mathf.Abs (mood) < MOOD_RANGE) {
 				mood += (decrement ? -1 : 1);
 			}
 		}
