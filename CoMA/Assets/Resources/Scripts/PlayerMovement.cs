@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour{
 
 	// Checks every frame.
 	void Update () {
-		var move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
+		var move = new Vector3(Input.GetAxis("Horizontal"), 0, 0).normalized * 5;
 		transform.position += move * Time.deltaTime;
 	}
 }
