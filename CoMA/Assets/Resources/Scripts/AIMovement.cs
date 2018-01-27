@@ -6,6 +6,7 @@ using UnityEngine;
 public class AIMovement : BaseMovement {
 
 	public float time = 0.0f;
+	public float moveSpeed = 0.03f;
 	private Vector3 targetPos = Vector3.zero;
 	public enum AIState { Idle, Talk, Seek, Enforce };
 	public AIState state;
@@ -22,6 +23,7 @@ public class AIMovement : BaseMovement {
 			break;
 		case Character.CharacterClass.bibleThumper:
 		case Character.CharacterClass.meanie:
+			moveSpeed = 0.005f;		// Enforcers move slower than civilians due to the fact that they're constantly moving.
 			state = AIState.Enforce;
 			break;
 		default:
@@ -30,8 +32,6 @@ public class AIMovement : BaseMovement {
 	}
 
 	void Update(){
-		if (!canMove)
-			return;
 
 		// Update AI pathing every time Time hits 0.
 		if (time > 0) {
@@ -40,7 +40,9 @@ public class AIMovement : BaseMovement {
 			updateAI ();
 		}
 
-		transform.position = Vector2.MoveTowards(transform.position, targetPos, 0.05f);
+		if (canMove) {
+			transform.position = Vector2.MoveTowards (transform.position, targetPos, 0.02f);
+		}
 	}
 
 	void updateAI(){
@@ -62,16 +64,25 @@ public class AIMovement : BaseMovement {
 			// Case 2: Mood is low. Search for nearby happy person.
 
 			// Case 3: Nobody is nearby. Move within random location.
-			targetPos.x = (transform.position.x - Random.Range (-1.5f, 1.5f));
-			targetPos.y = (transform.position.z - Random.Range (-1.5f, 1.5f));
+			targetPos.x = (transform.position.x + Random.Range (-1.5f, 1.5f));
+			targetPos.y = (transform.position.z + Random.Range (-1.5f, 1.5f));
 			state = AIState.Idle;
 			break;
 		case AIState.Talk:
 			// Placeholder for now.
 			break;
 		case AIState.Enforce:
-			// Essentially an uber-seek.
-			Character targetChar = FindObjectOfType<Character>
+			// Essentially an uber-seek. Stay ultra close to a target.
+			Character[] charArray = FindObjectsOfType<Character> ();
+
+			foreach (Character target in charArray) {
+				if (target.type == Character.CharacterClass.normie) {
+					targetPos.x = target.transform.position.x + Random.Range(-0.5f, 0.5f);
+					targetPos.y = target.transform.position.y + Random.Range(-0.5f, 0.5f);
+					time = Random.Range (0.5f, 1.5f);
+					break;
+				}
+			}
 			break;
 		default:
 			break;

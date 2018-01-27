@@ -109,4 +109,5 @@ public class Character : MonoBehaviour {
 		//Vector2 origin = transform.position;
 		//GUI.TextField(new Rect((Vector2)Camera.main.WorldToScreenPoint(transform.position), Vector2.one * 20), mood.ToString());
 	}
+
 }
