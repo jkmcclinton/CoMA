@@ -4,21 +4,20 @@ using System.Linq;
 using UnityEngine;
 
 public class LevelController : MonoBehaviour {
-
-    [Tooltip("Delete me! Should spawn from prefab, not reference")]
-    public Character reference;
+    
     /// <summary> how long the game goes until the win condition is checked </summary>
     public float LevelTime = 3*60;
     public float enemies = 1;
     [HideInInspector] public bool isMultiplayer = false;
 
-    private GameObject player;
+    private GameObject player, cubicle;
     private GameObject nextLevel;
     FadeController fader;
     private List<GameObject> SpawnPoints;
     private List<Character> NPCs;
     private Sprite[] attributes;
 
+    public float time { get { return gameTimer; } }
     public void runMe() { gameRunning = true; }
 
     /// <summary> players maximum possible mood required to cause "Death" condition </summary>
@@ -28,6 +27,9 @@ public class LevelController : MonoBehaviour {
     /// <summary> running timer of game </summary>
     private float gameTimer;
     private bool gameRunning = true;
+
+    /// <summary> refernce to NPC prefab  </summary>
+    private Character reference;
 
     // list of runtime statistics
     /// <summary> number of times player has converted people </summary>
@@ -48,7 +50,7 @@ public class LevelController : MonoBehaviour {
     }
 
     [HideInInspector]
-    public LCState lcState;
+    public LCState lcState = LCState.StartGame;
     public enum LCState { StartGame, SwitchScene, Doso}
 
 	// Use this for initialization
@@ -59,6 +61,10 @@ public class LevelController : MonoBehaviour {
         attributes = Resources.LoadAll<Sprite>("Sprites/CoMA People");
         player = GameObject.Find("Player");
         player.GetComponent<PlayerMovement>().canMove = false;
+
+        cubicle = Resources.Load<GameObject>("Prefabs/Cubicle");
+        SpawnCubicles();
+        reference = Resources.Load<GameObject>("Prefabs/NPC").GetComponent<Character>();
         if (reference!=null) SpawnPeople();
         gameTimer = LevelTime;
 	}
@@ -120,15 +126,64 @@ public class LevelController : MonoBehaviour {
 
     }
 
-    public void notify() {
+    public void Notify() {
         switch (lcState) {
             case LCState.SwitchScene:
                 // transition to next Scene
                 break;
             case LCState.StartGame:
+                Debug.Log("StartSplash");
                 SplashController splash = FindObjectOfType<SplashController>();
                 splash.GetComponent<Animator>().SetTrigger("StartSplash");
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Formats a float in seconds to a string in mm:ss
+    /// </summary>
+    /// <param name="t"></param>
+    /// <returns></returns>
+    public static string formatTime(float t) {
+        return (t < 60) ? "00" : f(2, t / 60) + ":" + f(2, t % 60);
+    }
+
+    public static string f(int min, float t) {
+        string s =((int) t).ToString();
+        if (s.Length < 2) s = "0" + s;
+        return s;
+    }
+
+    public void SpawnCubicles() {
+        int count = 0;
+        for (int h = 0; h < 3; h++) {
+            for (int w = -4; w < 5; w++) {
+                if (w != 0) {
+                    GameObject inst = Instantiate(cubicle, new Vector3(w, 2 - 2 * h), Quaternion.identity) as GameObject;
+                    inst.transform.parent = GameObject.Find("Level").transform;
+                    inst.name = "Cubicle" + count.ToString();
+
+                    if (h == 0) {
+                        inst.GetComponent<SpriteRenderer>().sortingOrder = -4110;
+                    } else if (h == 1) {
+                        inst.GetComponent<SpriteRenderer>().sortingOrder = -110;
+                    } else {
+                        inst.GetComponent<SpriteRenderer>().sortingOrder = 3830;
+                    }
+
+                    for (int i = 1; i <= inst.transform.childCount; i++) {
+                        if (inst.transform.GetChild(i - 1).GetComponent<SpriteRenderer>()) {
+                            inst.transform.GetChild(i - 1).GetComponent<SpriteRenderer>().sortingOrder = inst.GetComponent<SpriteRenderer>().sortingOrder + i * 2;
+
+                            for (int j = 1; j <= inst.transform.GetChild(i - 1).childCount; j++) {
+                                inst.transform.GetChild(i - 1).GetChild(i - 1).GetComponent<SpriteRenderer>().sortingOrder = inst.GetComponent<SpriteRenderer>().sortingOrder + i * 2 + j;
+                            }
+                        }
+                    }
+
+                    count++;
+                }
+            }
         }
     }
 
@@ -136,7 +191,6 @@ public class LevelController : MonoBehaviour {
     public void SpawnPeople() {
         SpawnPoints.AddRange(GameObject.FindGameObjectsWithTag("Respawn"));
         List<GameObject> toRemove = new List<GameObject>();
-
         foreach (GameObject point in SpawnPoints) {
             Transform root = GameObject.Find("NPCs").transform;
             int chance = Random.Range(0, 100);
@@ -151,6 +205,7 @@ public class LevelController : MonoBehaviour {
                 GameObject Skin = npc.transform.Find("Sprites/Skin").gameObject;
                 GameObject Hair = npc.transform.Find("Sprites/Hair").gameObject;
                 GameObject Clothes = npc.transform.Find("Sprites/Clothes").gameObject;
+                npc.GetComponent<AIMovement>().canMove = false;
 
                 int gender = Random.Range(0, 1);                                                    // random gender
                 Skin.GetComponent<SpriteRenderer>().sprite = attributes[Random.Range(0, 4) + 20];   // random skin
@@ -183,8 +238,7 @@ public class LevelController : MonoBehaviour {
             SpawnPoints.RemoveAt(num);
         }
     }
-
-
+    
     public void TallyAgonyConversion() {
         this.AgonyConversionCount++;
     }

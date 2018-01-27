@@ -19,7 +19,7 @@ public class FadeController : MonoBehaviour {
 	}
 
     public void Notify() {
-        lc.notify();
+        lc.Notify();
     }
     public void FadeIn() { FadeIn(1);  }
     public void FadeOut() { FadeOut(1); }
