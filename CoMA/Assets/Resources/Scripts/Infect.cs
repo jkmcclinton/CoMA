@@ -31,12 +31,12 @@ public class Infect : MonoBehaviour {
 					}
 				}
 			} else {
-				target.GetComponent<Character> ().Infect (true, true); //{
-
-				//}
+				GetComponent<PlayerMovement> ().canMove = false;
+				target.GetComponent<Character> ().Infect (true, true);
 			}
 		} else {
 			if (target) {
+				GetComponent<PlayerMovement> ().canMove = true;
 				target.GetComponent<Character> ().Infect (false, true);
 				target = null;
 			}
