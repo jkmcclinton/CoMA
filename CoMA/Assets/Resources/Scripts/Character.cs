@@ -11,7 +11,7 @@ public class Character : MonoBehaviour {
 	public float secondsBetweenRegens = 10f;
 	public float secondsElapsed = 0f;
 
-	public bool moodChanging = false;
+	public bool beingInfected = false;
 
 	public virtual void Start () {
 		StartCoroutine (RegenMood ());
@@ -25,8 +25,13 @@ public class Character : MonoBehaviour {
 		while (true) {
 			secondsElapsed = 0f;
 			while (secondsElapsed < secondsBetweenRegens) {
-				secondsElapsed += Time.deltaTime;
-				yield return new WaitForEndOfFrame ();
+				if (!beingInfected) {
+					secondsElapsed += Time.deltaTime;
+					yield return new WaitForEndOfFrame ();
+				} else {
+					secondsElapsed = 0f;
+					yield return new WaitForEndOfFrame ();
+				}
 			}
 
 			if (mood != defaultMood) {
@@ -35,8 +40,31 @@ public class Character : MonoBehaviour {
 		}
 	}
 
-	public abstract void Infect ();
+	public virtual void Infect (bool active, bool decrement) {
+		//print ("Infect Called! Active: " + active + "\tDecrement: " + decrement);
+		if (active) {
+			if (!beingInfected) {
+				StartCoroutine (Infect (decrement));
+			}
+		} else {
+			StopCoroutine ("Infect");
+			beingInfected = false;
+		}
+	}
 
+	public IEnumerator Infect (bool decrement) {
+		beingInfected = true;
+
+		while (true) {
+			yield return new WaitForSeconds (2f);
+			if (!beingInfected)
+				break;
+
+			if (Mathf.Abs (mood) < 10) {
+				mood += (decrement ? -1 : 1);
+			}
+		}
+	}
 
 	public enum CharacterClass
 	{
