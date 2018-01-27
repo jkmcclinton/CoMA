@@ -6,7 +6,8 @@ public class Character : MonoBehaviour {
 	public CharacterClass type = CharacterClass.bibleThumper;
     public LevelController level;
     public const int MOOD_RANGE = 10;
-    
+    public const int SPEED = 20;
+
     [Range(-MOOD_RANGE, MOOD_RANGE)]
 	public int mood = 0; // [-10, 10], [sad, happy]. 0 = Neutral
     [Range(-MOOD_RANGE, MOOD_RANGE)]

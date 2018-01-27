@@ -13,6 +13,8 @@ public class LevelController : MonoBehaviour {
     [HideInInspector] public bool isMultiplayer = false;
 
     private GameObject player;
+    private GameObject nextLevel;
+    FadeController fader;
     private List<GameObject> SpawnPoints;
     private List<Character> NPCs;
     private Sprite[] attributes;
@@ -41,6 +43,7 @@ public class LevelController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        fader = GameObject.FindObjectOfType<FadeController>();
         SpawnPoints = new List<GameObject>();
         NPCs = new List<Character>();
         attributes = Resources.LoadAll<Sprite>("Sprites/CoMA People");
@@ -100,6 +103,15 @@ public class LevelController : MonoBehaviour {
         gameRunning = false;
     }
 
+    public void ReturnToMenu() {
+        fader.FadeOut(2);
+
+    }
+
+    public void notify() {
+        // transition to next Scene
+    }
+
     // Spawn NPCs in random cubicles, randomize attributes
     public void SpawnPeople() {
         SpawnPoints.AddRange(GameObject.FindGameObjectsWithTag("Respawn"));
@@ -129,26 +141,26 @@ public class LevelController : MonoBehaviour {
 
                 toRemove.Add(point);
             }
+        }
 
-            // spawn player in random leftover spawn point
-            SpawnPoints = SpawnPoints.Except(toRemove).ToList();
-            if (player != null) {
-                int num = Random.Range(0, SpawnPoints.Count);
-                player.transform.position = SpawnPoints[num].transform.position;
-                SpawnPoints.RemoveAt(num);
-            }
-            
-            // spawn eneme in random leftover spawn point
-            for(int i = 0; i < enemies; i++) {
-                int num = Random.Range(0, SpawnPoints.Count);
-                GameObject enemy = GameObject.Instantiate(reference.gameObject, SpawnPoints[num].transform.position,
-                    Quaternion.identity);
-                Character eChar = enemy.GetComponent<Character>();
-                eChar.type = Character.CharacterClass.bibleThumper;
-                enemy.transform.SetParent(GameObject.Find("NPCs").transform);
-                enemy.SetActive(true);
-                SpawnPoints.RemoveAt(num);
-            }
+        // spawn player in random leftover spawn point
+        SpawnPoints = SpawnPoints.Except(toRemove).ToList();
+        if (player != null) {
+            int num = Random.Range(0, SpawnPoints.Count - 1);
+            player.transform.position = SpawnPoints[num].transform.position;
+            SpawnPoints.RemoveAt(num);
+        }
+
+        // spawn eneme in random leftover spawn point
+        for (int i = 0; i < enemies && SpawnPoints.Count>0; i++) {
+            int num = Random.Range(0, SpawnPoints.Count - 1);
+            GameObject enemy = GameObject.Instantiate(reference.gameObject, SpawnPoints[num].transform.position,
+                Quaternion.identity);
+            Character eChar = enemy.GetComponent<Character>();
+            eChar.type = Character.CharacterClass.bibleThumper;
+            enemy.transform.SetParent(GameObject.Find("NPCs").transform);
+            enemy.SetActive(true);
+            SpawnPoints.RemoveAt(num);
         }
     }
 
