@@ -12,9 +12,9 @@ public class CanvasController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Neg = transform.Find("ScoreBar/Negative").GetComponent<Image>();
-        Pos = transform.Find("ScoreBar/Positive").GetComponent<Image>();
-        indicator = transform.Find("ScoreBar/Indicator").GetComponent<Slider>();
+		Neg = transform.Find("ScoreBar/Panel/Negative").GetComponent<Image>();
+		Pos = transform.Find("ScoreBar/Panel/Positive").GetComponent<Image>();
+		indicator = transform.Find("ScoreBar/Panel/Indicator").GetComponent<Slider>();
         timer = transform.Find("ScoreBar/Timer").GetComponent<Text>();
 
         indicator.minValue = -Character.MOOD_RANGE;

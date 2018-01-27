@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class LD_Unit : MonoBehaviour {
     public Color color = Color.blue;
-   public void OnDrawGizmosSelected() {
+
+   public void OnDrawGizmos() {
         Transform parent = transform.parent;
         Transform 左 = parent.Find("左");
         Transform 右 = parent.Find("右");

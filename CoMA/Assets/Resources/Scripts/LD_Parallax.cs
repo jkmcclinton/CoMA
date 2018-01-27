@@ -10,37 +10,25 @@ using System.Collections.Generic;
 
 public class LD_Parallax : MonoBehaviour {
     
-    private Vector3 レベル;
-    private Vector2 レン;
-    private Camera カム;
-    private SpriteRenderer 写真;
+    private Vector3 levelSize;
+    public Vector2 length;
 
     //静的データを設定します
     void Start() {
-        カム = GameObject.Find("Main Camera").GetComponent<Camera>();
-        Transform 左 = transform.FindChild("左");
-        Transform 右 = transform.FindChild("右");
-        Transform 上 = transform.FindChild("上"); 
-        Transform 下 = transform.FindChild("下"); 
+        Transform 左 = transform.Find("left");
+        Transform 右 = transform.Find("right");
+        Transform 上 = transform.Find("down"); 
+        Transform 下 = transform.Find("up"); 
 
-        GameObject main = GameObject.Find("メイン");
-        if (main == null) return;
-
-        写真 = main.GetComponent<SpriteRenderer>();
-        レン = new Vector2(右.position.x - 左.position.x,
+        length = new Vector2(右.position.x - 左.position.x,
             上.position.y - 下.position.y);
-        レベル =100* new Vector2(左.position.x + レン.x / 2,
-             下.position.y + レン.y / 2);
-        レン *= 100;
+		levelSize =100* new Vector2(左.position.x + length.x / 2,
+             下.position.y + length.y / 2);
+		length *= 100;
     }
 
     //写真はプレーヤーに移動します
     void Update() {
-        Vector2 シヂ = カム.pixelRect.size;
-        Vector2 シ = 100 * カム.transform.position - (レベル - (Vector3)(レン / 2));
-        Vector2 ビヂ = 写真.sprite.rect.size;
-        Vector2 オッフ = -((シ - レン / 2).div(レン)).mul(ビヂ - シヂ);
-        写真.transform.position = ((Vector2)(100 * カム.transform.position) + オッフ) /100;
     }
 }
 
