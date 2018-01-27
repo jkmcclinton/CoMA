@@ -24,6 +24,7 @@ public class AIMovement : BaseMovement {
 //			Debug.Log (move.x);
 		}
 
-		transform.position += move * Time.deltaTime;
+		//GetComponent<Rigidbody2D> ().velocity = move;
+		//transform.position += move * Time.deltaTime;
 	}
 }

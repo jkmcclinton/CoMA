@@ -15,7 +15,7 @@ public class PlayerMovement : BaseMovement {
 
 	// Checks every frame.
 	void FixedUpdate () {
-		var move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxis("Vertical")).normalized * Character.SPEED;
+		var move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized * Character.SPEED;
         //transform.position += move * Time.deltaTime;
         //body.AddForce(move);
 		if (canMove)

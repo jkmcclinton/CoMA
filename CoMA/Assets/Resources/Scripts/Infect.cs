@@ -32,12 +32,12 @@ public class Infect : MonoBehaviour {
 				}
 			} else {
 				GetComponent<PlayerMovement> ().canMove = false;
-				target.GetComponent<Character> ().Infect (true, true);
+				target.transform.parent.GetComponent<Character> ().Infect (true, true);
 			}
 		} else {
 			if (target) {
 				GetComponent<PlayerMovement> ().canMove = true;
-				target.GetComponent<Character> ().Infect (false, true);
+				target.transform.parent.GetComponent<Character> ().Infect (false, true);
 				target = null;
 			}
 		}
