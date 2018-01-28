@@ -896,6 +896,10 @@ Prefab:
       propertyPath: m_Name
       value: Bible (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1332580231300890, guid: 866b2bb601fb40d4a89a70966f689f3d, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 866b2bb601fb40d4a89a70966f689f3d, type: 2}
   m_IsPrefabParent: 0

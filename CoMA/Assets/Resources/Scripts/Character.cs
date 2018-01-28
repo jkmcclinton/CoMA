@@ -44,6 +44,8 @@ public class Character : MonoBehaviour {
 
     public void BecomeEnforcer(bool isDep) {
         if(isDep) {
+			mood = -10;
+			defaultMood = -10;
             Skin.sprite = sprites[24];
             Hair.sprite = sprites[4];
             Clothes.sprite = sprites[9];
@@ -51,6 +53,8 @@ public class Character : MonoBehaviour {
             trail.endColor = new Color(0, 7 / 255f, 141 / 255f, 0);
             trail.enabled = true;
         } else {
+			mood = 10;
+			defaultMood = 10;
             Skin.sprite = sprites[24];
             Hair.sprite = sprites[4];
             Clothes.sprite = sprites[9];

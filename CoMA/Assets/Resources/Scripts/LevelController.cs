@@ -241,8 +241,18 @@ public class LevelController : MonoBehaviour {
         foreach (GameObject point in SpawnPoints) {
             Transform root = GameObject.Find("NPCs").transform;
             int chance = UnityEngine.Random.Range(0, 100);
+
+			int typeChance = UnityEngine.Random.Range (0, 100);
+
+			Character chosenType;
+			if (typeChance <= 90) {
+				chosenType = reference;
+			} else {
+				chosenType = bible;
+			}
+
             if (chance < 100) {
-                GameObject npc = GameObject.Instantiate(reference.gameObject,
+				GameObject npc = GameObject.Instantiate(chosenType.gameObject,
                     point.transform.position, Quaternion.identity);
                 Character c = npc.GetComponent<Character>();
                 NPCs.Add(c);
@@ -252,14 +262,19 @@ public class LevelController : MonoBehaviour {
 
                 npc.GetComponent<AIMovement>().canMove = false;
 
-                int gender = UnityEngine.Random.Range(0, 1);                                                    // random gender
+                int gender = UnityEngine.Random.Range(0, 2);                                                  // random gender
                 c.Skin.sprite = attributes[UnityEngine.Random.Range(0, 4) + 20];   // random skin
                 c.Hair.GetComponent<SpriteRenderer>().sprite = attributes[gender + 1];                // gender hair
                 c.Clothes.GetComponent<SpriteRenderer>().sprite = attributes[gender + 6];             // gender clothes
                 npc.SetActive(true);
                 npc.transform.SetParent(root);
 
+
                 toRemove.Add(point);
+
+				if (chosenType != reference) {
+					c.BecomeEnforcer (false);
+				}
             }
         }
         
