@@ -90,10 +90,10 @@ public class Infect : MonoBehaviour {
 	}
 
 	void GetRandomSpeech () {
-		int val = Random.Range (0, 17);
+		int val = Random.Range (0, 23);
 
 		while (val == lastSpeech) {
-			val = Random.Range (0, 17);
+			val = Random.Range (0, 23);
 		}
 
 		switch (val) {
@@ -143,10 +143,28 @@ public class Infect : MonoBehaviour {
 			infectingSpeech = "Echidnas only live up to 18 years.";
 			break;
 		case 15:
-			infectingSpeech = "6666666666666666666666666666666666";
+			infectingSpeech = "Cotton-Eye Joe is probably dead.";
 			break;
 		case 16:
-			infectingSpeech = "'); DROP TABLE Sanity;-- ";
+			infectingSpeech = "Fred from Youtube's last post was\nOver 2 years ago.";
+			break;
+		case 17:
+			infectingSpeech = "Shark are killed for their fins\nEvery day.";
+			break;
+		case 18:
+			infectingSpeech = "Mayonnaise isn't classified as an instrument.";
+			break;
+		case 19:
+			infectingSpeech = "Rebecca farted earlier.";
+			break;
+		case 20:
+			infectingSpeech = "My Panera Bread gift card expired yesterday.";
+			break;
+		case 21:
+			infectingSpeech = "Amazon Prime charges for deliveries. :(";
+			break;
+		case 22:
+			infectingSpeech = "I just got an email that started with\n'Thank you for applying...'";
 			break;
 		default:
 			infectingSpeech = "Shoutout to SGD@UVA for the dank\nmemes and good-looking members ;)";

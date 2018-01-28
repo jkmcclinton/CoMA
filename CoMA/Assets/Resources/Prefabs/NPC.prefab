@@ -473,7 +473,12 @@ MonoBehaviour:
   defaultMood: 0
   secondsBetweenRegens: 10
   secondsElapsed: 0
+  bibleBombMaxTime: 10
+  bibleBombTime: 0
   beingInfected: 0
+  npcLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &114663088216088300
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -487,8 +492,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canMove: 1
   time: 0
+  waitTime: 5
+  timeWaited: 0
+  maxPathTime: 5
+  timeOnPath: 0
   moveSpeed: 0.03
+  targetPos: {x: 0, y: 0, z: 0}
   state: 0
+  seeker: {fileID: 0}
+  target: {fileID: 0}
 --- !u!114 &114913801122613358
 MonoBehaviour:
   m_ObjectHideFlags: 1

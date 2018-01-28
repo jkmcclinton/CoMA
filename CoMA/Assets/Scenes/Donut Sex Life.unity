@@ -387,6 +387,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 114466047704923030, guid: a37ecdc1fa2554231949e8aa6d62663b,
+        type: 2}
+      propertyPath: aoeRadius
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a37ecdc1fa2554231949e8aa6d62663b, type: 2}
   m_IsPrefabParent: 0
@@ -1014,6 +1019,10 @@ Prefab:
     - target: {fileID: 1332580231300890, guid: 866b2bb601fb40d4a89a70966f689f3d, type: 2}
       propertyPath: m_Name
       value: Bible (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1332580231300890, guid: 866b2bb601fb40d4a89a70966f689f3d, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 866b2bb601fb40d4a89a70966f689f3d, type: 2}

@@ -141,7 +141,7 @@ public class Character : MonoBehaviour {
 		GetComponent<BaseMovement> ().canMove = false;
 
 		while (true) {
-			yield return new WaitForSeconds (2f);
+			yield return new WaitForSeconds (1f);
 			if (!beingInfected)
 				break;
 
