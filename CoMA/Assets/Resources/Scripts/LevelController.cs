@@ -274,6 +274,7 @@ public class LevelController : MonoBehaviour {
 
 				if (chosenType != reference) {
 					c.BecomeEnforcer (false);
+					c.type = Character.CharacterClass.bibleThumper;
 				}
             }
         }

@@ -18,9 +18,13 @@ public class Character : MonoBehaviour {
 	public float secondsBetweenRegens = 10f;
 	public float secondsElapsed = 0f;
 
+	public float bibleBombMaxTime = 10f;
+	public float bibleBombTime = 0f;
+
 	public bool beingInfected = false;
     private Sprite[] sprites;
     private TrailRenderer trail;
+	public LayerMask npcLayer;
 
     public virtual void Awake () {
         Skin = transform.Find("Sprites/Skin").GetComponent<SpriteRenderer>();
@@ -39,6 +43,27 @@ public class Character : MonoBehaviour {
     }
 
     public virtual void Update () {
+
+		if (type == CharacterClass.bibleThumper) {
+
+			if (bibleBombTime < bibleBombMaxTime) {
+				bibleBombTime += Time.deltaTime;
+			} else {
+				print ("BIBLE BOMB!");
+				Collider2D[] NPCs = Physics2D.OverlapCircleAll((Vector2)transform.position, 2f, npcLayer);
+
+				//print (NPCs.Length);
+				foreach (var npc in NPCs) {
+					print ("Affected: " + npc.name);
+					npc.transform.parent.GetComponent<Character> ().mood += 2;
+					npc.transform.parent.GetComponent<Character> ().mood = (int)Mathf.Clamp(npc.transform.parent.GetComponent<Character> ().mood, -10f, 10f);
+				}
+
+				bibleBombTime = 0f;
+			}
+
+
+		}
 
 	}
 

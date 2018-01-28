@@ -7,10 +7,17 @@ using UnityEngine;
 public class AIMovement : BaseMovement {
 
 	public float time = 0.0f;
-	public float pathTime = 3.0f;
+
+	public float waitTime = 5f;
+	public float timeWaited = 0f;
+
+	public float maxPathTime = 5.0f;
+	public float timeOnPath = 0f;
+
 	public float moveSpeed = 0.03f;
+
 	public Vector3 targetPos;
-	public enum AIState { Idle, Talk, Seek, Enforce };
+	public enum AIState { Idle, Walk, Talk, Seek, Enforce };
 	public AIState state;
 
     NavGrid navmesh;
@@ -18,6 +25,7 @@ public class AIMovement : BaseMovement {
 
      void Awake() {
         navmesh= FindObjectOfType<NavGrid>();
+		timeWaited = Random.Range (1f, 2f);
     }
 
 	public List<NavGrid.Node> path;
@@ -31,7 +39,7 @@ public class AIMovement : BaseMovement {
 		character = GetComponent<Character> ();
 		switch (character.type) {
 		case Character.CharacterClass.normie:
-			state = AIState.Seek;
+			state = AIState.Idle;
 			break;
 		case Character.CharacterClass.bibleThumper:
 		case Character.CharacterClass.meanie:
@@ -41,9 +49,15 @@ public class AIMovement : BaseMovement {
 		default:
 			break;
 		}
+		state = AIState.Idle;
 	}
 
 	void Update(){
+
+		updateAI ();
+
+		return;
+
 		// Update AI pathing every time Time hits 0.
 		if (time > 0) {
 			time -= Time.deltaTime;
@@ -51,7 +65,7 @@ public class AIMovement : BaseMovement {
 			updateAI ();
 		}
 
-		if (canMove) {
+		/*if (canMove) {
 			
 			if (path != null && path.Count > 0 && pathTime > 0f) {
 				// If it takes >5 seconds (stuck on wall) just find a new path entirely.
@@ -65,12 +79,69 @@ public class AIMovement : BaseMovement {
 			} else if (path == null || path.Count == 0 || pathTime <= 0f) {
 				pathTime = 5.0f;
 				state = AIState.Seek;
+				updateAI ();
 				FindPath (transform.position, targetPos);
 			}
             //transform.position = Vector2.MoveTowards(transform.position, targetPos, 0.02f);
-        }
+            */
 	}
 
+	void updateAI () {
+		switch (state) { 
+		case AIState.Idle:
+			if (timeWaited >= waitTime) {
+				waitTime = Random.Range (1f, 2f);
+				state = AIState.Walk;
+				//print ("Switching to Walk State!!");
+				timeWaited = 0f;
+				timeOnPath = 0f;
+				targetPos.x = (transform.position.x + Random.Range (-1.5f, 1.5f));
+				targetPos.y = (transform.position.z + Random.Range (-1.5f, 1.5f));
+			} else {
+				timeWaited += Time.deltaTime;
+			}
+			break;
+		case AIState.Walk:
+			if (canMove) {
+				//print ("IM MOVING");
+				if (path != null && path.Count > 0 && timeOnPath < maxPathTime) {
+					// If it takes >5 seconds (stuck on wall) just find a new path entirely.
+					//timeOnPath += Time.deltaTime;
+
+					if (Vector3.Distance (transform.position, path [0].loc) <= 0.001f) {
+						path.RemoveAt (0);					
+					} else {
+						transform.position = Vector2.MoveTowards (transform.position, path [0].loc, moveSpeed);
+					}
+				} else if (path == null || path.Count == 0 || timeOnPath >= maxPathTime) {
+					if (timeOnPath > 0f) {
+						//print ("GOING IDLE");
+						state = AIState.Idle;
+					} else {
+						timeOnPath = 0f;
+
+						FindPath (transform.position, targetPos);
+					}
+				} else {
+					timeOnPath += Time.deltaTime;
+				}
+				timeOnPath += Time.deltaTime;
+			} else {
+				timeWaited = 0f;
+				timeOnPath = 0f;
+				state = AIState.Idle;
+			}
+			break;
+		case AIState.Seek:
+			break;
+		case AIState.Talk:
+			break;
+		case AIState.Enforce:
+			break;
+		}
+	}
+
+	/*
 	void updateAI(){
 		switch (state) { 
 		case AIState.Idle:
@@ -88,9 +159,12 @@ public class AIMovement : BaseMovement {
 			// Case 2: Mood is low. Search for nearby happy person.
 			// Case 3: Nobody is nearby. Move within random location.
 
-			RaycastHit2D[] nearbyPeople = Physics2D.CircleCastAll (transform.position, 3.0f, Vector2.zero, 0.0f, LayerMask.NameToLayer ("NPC"));
+			//RaycastHit2D[] nearbyPeople = Physics2D.CircleCastAll (transform.position, 3.0f, Vector2.zero, 0.0f, LayerMask.NameToLayer ("NPC"));
+			Collider2D[] nearbyPeople = Physics2D.OverlapCircleAll(transform.position, 3f, LayerMask.NameToLayer("NPC"));
+
+
 			if (nearbyPeople.Length != 0) {
-				targetPos = nearbyPeople[0].point;
+				targetPos = nearbyPeople[0].transform.position;
 				Debug.Log ("Nearby person found!!");
 			} else {
 				targetPos.x = (transform.position.x + Random.Range (-1.5f, 1.5f));
@@ -106,10 +180,11 @@ public class AIMovement : BaseMovement {
 			break;
 		case AIState.Enforce:
 			// Essentially an uber-seek. Stay ultra close to a target.
-			List<Character> charList = FindObjectsOfType<Character> ();
+			Character[] charListArray = FindObjectsOfType<Character> ();
+			List<Character> charList = new List<Character> (charListArray);
 
 			foreach (Character target in charList) {
-				if (target.type == Character.CharacterClass.normie && target.mood) {
+				if (target.type == Character.CharacterClass.normie && target.mood > -6) {
 					targetPos.x = target.transform.position.x + Random.Range(-0.5f, 0.5f);
 					targetPos.y = target.transform.position.y + Random.Range(-0.5f, 0.5f);
 					time = Random.Range (0.5f, 1.5f);
@@ -120,7 +195,7 @@ public class AIMovement : BaseMovement {
 			break;
 		}
 
-	}
+	}*/
     
     void FindPath(Vector3 startPos, Vector3 targetPos) {
 		NavGrid.Node startNode = navmesh.NodeFromWorldPoint(startPos);
