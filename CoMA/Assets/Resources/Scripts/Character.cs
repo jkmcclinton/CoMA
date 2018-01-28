@@ -34,7 +34,7 @@ public class Character : MonoBehaviour {
 
         this.level = GameObject.FindObjectOfType<LevelController>();
         this.sprites = Resources.LoadAll<Sprite>("Sprites/CoMA People");
-        this.trail = GetComponent<TrailRenderer>();
+        this.trail = Clothes.GetComponent<TrailRenderer>();
 	}
 
      void Start() {

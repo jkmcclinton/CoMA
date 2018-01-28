@@ -358,7 +358,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_GenerateMotionCurves: 0
   m_Events:
-  - time: 2.0666666
+  - time: 2.05
     functionName: showGOMenu
     data: 
     objectReferenceParameter: {fileID: 0}
