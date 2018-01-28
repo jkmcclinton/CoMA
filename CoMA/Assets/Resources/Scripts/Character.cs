@@ -49,13 +49,13 @@ public class Character : MonoBehaviour {
 			if (bibleBombTime < bibleBombMaxTime) {
 				bibleBombTime += Time.deltaTime;
 			} else {
-				print ("BIBLE BOMB!");
+				//print ("BIBLE BOMB!");
 				Collider2D[] NPCs = Physics2D.OverlapCircleAll((Vector2)transform.position, 2f, npcLayer);
 
 				//print (NPCs.Length);
 				foreach (var npc in NPCs) {
-					print ("Affected: " + npc.name);
-					npc.transform.parent.GetComponent<Character> ().mood += 2;
+				//	print ("Affected: " + npc.name);
+					npc.transform.parent.GetComponent<Character> ().mood += 1;
 					npc.transform.parent.GetComponent<Character> ().mood = (int)Mathf.Clamp(npc.transform.parent.GetComponent<Character> ().mood, -10f, 10f);
 				}
 
