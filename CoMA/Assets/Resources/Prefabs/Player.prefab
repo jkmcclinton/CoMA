@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4769808405366522}
   - component: {fileID: 212457024578594912}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Hair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4542531653920712}
   - component: {fileID: 212895092393730322}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57,7 +57,8 @@ GameObject:
   - component: {fileID: 114466047704923030}
   - component: {fileID: 114845899710950212}
   - component: {fileID: 50738433091064634}
-  m_Layer: 8
+  - component: {fileID: 114499940455215300}
+  m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +74,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4550400166756368}
   - component: {fileID: 61790788594805262}
-  m_Layer: 8
+  - component: {fileID: 114370578445826612}
+  m_Layer: 9
   m_Name: Sprites
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4084265161845532}
   - component: {fileID: 212273841999130366}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Skin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,7 +107,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4028678143149772}
   - component: {fileID: 212102596938145586}
-  m_Layer: 8
+  - component: {fileID: 96769913095707132}
+  m_Layer: 9
   m_Name: Clothes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,7 +148,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1142804658599846}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.301, y: 0.507, z: 0.09448242}
+  m_LocalPosition: {x: 1.091, y: 0.276, z: 0.09448242}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 4550400166756368}
@@ -227,7 +230,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.04, y: 0.055}
+  m_Offset: {x: -0.04, y: -0.01}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -238,7 +241,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.12, y: 0.17}
+  m_Size: {x: 0.12, y: 0.05}
   m_EdgeRadius: 0
 --- !u!95 &95360101500962626
 Animator:
@@ -257,6 +260,99 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!96 &96769913095707132
+TrailRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1552156582151568}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 7b5cd4dfe27fe8749adcba708db17903, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Time: 0.3
+  m_Parameters:
+    serializedVersion: 2
+    widthMultiplier: 0.09
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 2
+        time: 0
+        value: 1
+        inSlope: -1.1564915
+        outSlope: -1.1564915
+        tangentMode: 0
+      - serializedVersion: 2
+        time: 1
+        value: 0
+        inSlope: -1.0518103
+        outSlope: -1.0518103
+        tangentMode: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 0, g: 0, b: 0, a: 1}
+      key1: {r: 0, g: 0.04705883, b: 1, a: 0}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 2
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    generateLightingData: 0
+  m_MinVertexDistance: 0.06
+  m_Autodestruct: 0
 --- !u!114 &114296436152874348
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -269,6 +365,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canMove: 1
+--- !u!114 &114370578445826612
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1428859939300642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a5eaf43c68674fe9bb20e765c7846ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114466047704923030
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -281,13 +388,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  infectRadius: 0.59
-  targets: []
+  infectRadius: 0.5
+  aoeRadius: 10
+  normalInfectTargets: []
+  aoeInfectTargets: []
   infectMask:
     serializedVersion: 2
     m_Bits: 256
   infecting: 0
   infectingSpeech: 
+--- !u!114 &114499940455215300
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1142804658599846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a56d4961aa54e85baf86f92bbc034e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  level: {fileID: 0}
+  Skin: {fileID: 212273841999130366}
+  Hair: {fileID: 212457024578594912}
+  Face: {fileID: 212895092393730322}
+  Clothes: {fileID: 212102596938145586}
+  mood: -10
+  defaultMood: -10
+  secondsBetweenRegens: 10
+  secondsElapsed: 0
+  beingInfected: 0
 --- !u!114 &114519792960814228
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -312,6 +443,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 6
   level: {fileID: 0}
+  Skin: {fileID: 0}
+  Hair: {fileID: 0}
+  Face: {fileID: 0}
+  Clothes: {fileID: 0}
   mood: 0
   defaultMood: 0
   secondsBetweenRegens: 10

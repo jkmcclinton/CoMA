@@ -13,17 +13,11 @@ public class NavGrid : MonoBehaviour {
     
     public Vector2 worldSize;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         unwalkableMask = LayerMask.NameToLayer("Obstacle");
-        mapSize = new Vector2(Mathf.RoundToInt(worldSize.x / nodeDiameter),
-                            Mathf.RoundToInt(worldSize.y / nodeDiameter));
+        //path = new List<Node>();
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     public List<Node> GetNeighbors(Node node) {
         List<Node> n = new List<Node>();
@@ -61,9 +55,12 @@ public class NavGrid : MonoBehaviour {
     }
 
     public void GenerateMap() {
+
+        mapSize = new Vector2(Mathf.RoundToInt(worldSize.x / nodeDiameter),
+                            Mathf.RoundToInt(worldSize.y / nodeDiameter));
         navMap = new Node[(int)mapSize.x, (int)mapSize.y];
         Vector2 wbm = transform.position - Vector3.right * worldSize.x / 2f - Vector3.up * worldSize.y / 2f;
-
+        
         for (int x = 0; x < navMap.GetLength(0); x++) {
             for (int y = 0; y < navMap.GetLength(1); y++) {
                 Vector2 worldPoint = wbm + Vector2.right * ( x * nodeDiameter+nodeRad) +
@@ -85,11 +82,12 @@ public class NavGrid : MonoBehaviour {
         Gizmos.DrawWireCube(transform.position, new Vector3(worldSize.x, worldSize.y,1)); 
         if (navMap != null) {
             Node p = NodeFromWorldPoint(GameObject.Find("Player").transform.position);
+            Node C = NodeFromWorldPoint(GameObject.Find("NPC(Clone)").transform.position);
             foreach (Node n in navMap) {
                 
                 Gizmos.color = n.walkable ? Color.green : Color.red;
-                if (p == n) Gizmos.color = Color.blue;
-                if (p != null)
+                if (p == n || p==C) Gizmos.color = Color.blue;
+                if (path != null)
                     if (path.Contains(n)) Gizmos.color = Color.black;
                 Gizmos.DrawCube(n.loc,  Vector2.one*nodeRad*1.5f);
             }

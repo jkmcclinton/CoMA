@@ -100,66 +100,69 @@ public class AIMovement : BaseMovement {
 
 	}
     
-    private void FindPath(Vector2 start, Vector2 target) {
-        NavGrid.Node sNode = navmesh.NodeFromWorldPoint(start);
-        NavGrid.Node tNode = navmesh.NodeFromWorldPoint(target);
+    void FindPath(Vector3 startPos, Vector3 targetPos) {
+		NavGrid.Node startNode = navmesh.NodeFromWorldPoint(startPos);
+        NavGrid.Node targetNode = navmesh.NodeFromWorldPoint(targetPos);
 
-        List<NavGrid.Node> open = new List<NavGrid.Node>();
-        HashSet<NavGrid.Node> closed = new HashSet<NavGrid.Node>();
-        open.Add(sNode);
+		List<NavGrid.Node> openSet = new List<NavGrid.Node>();
+		HashSet<NavGrid.Node> closedSet = new HashSet<NavGrid.Node>();
+		openSet.Add(startNode);
 
-        while (open.Count > 0) {
-            for (int i = 1; i < open.Count; i++) {
-                NavGrid.Node currentNode = open[0];
-                if (open[i].f < currentNode.f ||
-                    open[i].f == currentNode.f & open[i].h < currentNode.h) {
-                    currentNode = open[i];
-                }
+		while (openSet.Count > 0) {
+            NavGrid.Node node = openSet[0];
+			for (int i = 1; i < openSet.Count; i ++) {
+				if (openSet[i].f < node.f || openSet[i].f == node.f) {
+					if (openSet[i].h < node.h)
+						node = openSet[i];
+				}
+			}
 
-                open.Remove(currentNode);
-                closed.Add(currentNode);
+			openSet.Remove(node);
+			closedSet.Add(node);
 
-                if (currentNode == tNode) {
-                    RetracePath(sNode, tNode);
-                    return;
+			if (node == targetNode) {
+				RetracePath(startNode,targetNode);
+				return;
+			}
 
-                }
+			foreach (NavGrid.Node neighbour in navmesh.GetNeighbors(node)) {
+				if (!neighbour.walkable || closedSet.Contains(neighbour)) {
+					continue;
+				}
 
-                foreach (NavGrid.Node n in navmesh.GetNeighbors(currentNode)) {
-                    if (!n.walkable || closed.Contains(n)) continue;
+				int newCostToNeighbour = node.g + GetDistance(node, neighbour);
+				if (newCostToNeighbour < neighbour.g || !openSet.Contains(neighbour)) {
+					neighbour.g = newCostToNeighbour;
+					neighbour.h = GetDistance(neighbour, targetNode);
+					neighbour.parent = node;
 
-                    int newC = currentNode.g + getDistance(currentNode, n);
-                    if (newC < n.g || open.Contains(n)) {
-                        n.g = newC;
-                        n.h = getDistance(n, tNode);
-                        n.parent = currentNode;
+					if (!openSet.Contains(neighbour))
+						openSet.Add(neighbour);
+				}
+			}
+		}
+	}
 
-                        if (!open.Contains(n))
-                            open.Add(n);
-                    }
-                }
-            }
+
+    void RetracePath(NavGrid.Node startNode, NavGrid.Node endNode) {
+        List<NavGrid.Node> path = new List<NavGrid.Node>();
+        NavGrid.Node currentNode = endNode;
+
+        while (currentNode != startNode) {
+            path.Add(currentNode);
+            currentNode = currentNode.parent;
         }
-    }
-
-    
-
-    void RetracePath(NavGrid.Node start, NavGrid.Node end) {
-        List <NavGrid.Node > path = new List<NavGrid.Node>();
-        NavGrid.Node current = end;
-        while (current != start) {
-            path.Add(current);
-            current = current.parent;
-        } path.Reverse();
+        path.Reverse();
 
         navmesh.path = path;
     }
 
-    public int getDistance(NavGrid.Node a, NavGrid.Node b) {
-        Vector2 d = new Vector2(Mathf.Abs(a.grid.x - b.grid.x),
-            Mathf.Abs(a.grid.y - b.grid.y));
+    int GetDistance(NavGrid.Node nodeA, NavGrid.Node nodeB) {
+        int dstX = (int)Mathf.Abs(nodeA.grid.x - nodeB.grid.x);
+        int dstY = (int)Mathf.Abs(nodeA.grid.y - nodeB.grid.y);
 
-        return (int)((d.x > d.y) ? (14 * d.y + 10 * (d.x - d.y)) : 
-            (14 * d.x + 10 * (d.y - d.x)));
+        if (dstX > dstY)
+            return 14 * dstY + 10 * (dstX - dstY);
+        return 14 * dstX + 10 * (dstY - dstX);
     }
 }

@@ -8,6 +8,8 @@ public class Character : MonoBehaviour {
     public const int MOOD_RANGE = 10;
     public const int SPEED = 5;
 
+    public SpriteRenderer Skin, Hair, Face, Clothes;
+
     [Range(-MOOD_RANGE, MOOD_RANGE)]
 	public int mood = 0; // [-10, 10], [sad, happy]. 0 = Neutral
     [Range(-MOOD_RANGE, MOOD_RANGE)]
@@ -17,37 +19,46 @@ public class Character : MonoBehaviour {
 	public float secondsElapsed = 0f;
 
 	public bool beingInfected = false;
+    private Sprite[] sprites;
+    private TrailRenderer trail;
 
-	public virtual void Start () {
-//		switch (type) {
-//		case CharacterClass.normie:
-//			defaultMood = 0;
-//			secondsBetweenRegens = 10f;
-//			break;
-//		case CharacterClass.player:
-//			defaultMood = -10;
-//			secondsBetweenRegens = 10f;
-//			break;
-//		case CharacterClass.bibleThumper:
-//			defaultMood = 10;
-//			secondsBetweenRegens = 0.1f;
-//			break;
-//		case CharacterClass.meanie:
-//			defaultMood = -10;
-//			secondsBetweenRegens = 0.1f;
-//			break;
-//		default:
-//			print ("Error: Character Class not recognized.");
-//		}
-			
+    public virtual void Awake () {
+        Skin = transform.Find("Sprites/Skin").GetComponent<SpriteRenderer>();
+        Hair = transform.Find("Sprites/Hair").GetComponent<SpriteRenderer>();
+        Face = transform.Find("Sprites/Eyes").GetComponent<SpriteRenderer>();
+        Clothes = transform.Find("Sprites/Clothes").GetComponent<SpriteRenderer>();
+
         this.level = GameObject.FindObjectOfType<LevelController>();
-
-		StartCoroutine (RegenMood ());
+        this.sprites = Resources.LoadAll<Sprite>("Sprites/CoMA People");
+        this.trail = GetComponent<TrailRenderer>();
 	}
 
-	public virtual void Update () {
+     void Start() {
+
+        //StartCoroutine(RegenMood());
+    }
+
+    public virtual void Update () {
 
 	}
+
+    public void BecomeEnforcer(bool isDep) {
+        if(isDep) {
+            Skin.sprite = sprites[24];
+            Hair.sprite = sprites[4];
+            Clothes.sprite = sprites[9];
+            trail.startColor = new Color(0, 7 / 255f, 141 / 255f, 1);
+            trail.endColor = new Color(0, 7 / 255f, 141 / 255f, 0);
+            trail.enabled = true;
+        } else {
+            Skin.sprite = sprites[24];
+            Hair.sprite = sprites[4];
+            Clothes.sprite = sprites[9];
+            trail.startColor = new Color(241 / 255f, 255 / 255f, 0 / 255f, 1);
+            trail.endColor = new Color(134 / 255f, 7 / 203, 3 / 255f, 0);
+            trail.enabled = true;
+        }
+    }
 
 	public IEnumerator RegenMood () {
 		while (true) {

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour {
     
@@ -14,7 +14,7 @@ public class LevelController : MonoBehaviour {
 
     NavGrid A_star;
     private GameObject player, cubicle;
-    private GameObject nextLevel;
+    private string nextLevel;
     private Animator splashAnim;
     FadeController fader;
     private List<GameObject> SpawnPoints;
@@ -33,7 +33,7 @@ public class LevelController : MonoBehaviour {
     private bool gameRunning = true;
 
     /// <summary> refernce to NPC prefab  </summary>
-    private Character reference;
+    private Character reference, bible;
     
     // list of runtime statistics
     /// <summary> number of times player has converted people </summary>
@@ -74,10 +74,11 @@ public class LevelController : MonoBehaviour {
 
         if (A_star != null)
             A_star.GenerateMap();
-        
+
+        bible = Resources.Load<GameObject>("Prefabs/Bible").GetComponent<Character>();
         reference = Resources.Load<GameObject>("Prefabs/NPC").GetComponent<Character>();
         if (reference!=null) SpawnPeople();
-        gameTimer = LevelTime;
+            gameTimer = LevelTime;
 	}
 	
 	// Update is called once per frame
@@ -140,23 +141,29 @@ public class LevelController : MonoBehaviour {
     }
 
     public void QuitGame() {
-
+        if (MsgBox.Confirm("Are you sure about that?")) {
+            lcState = LCState.CloseApplication;
+            fader.FadeOut(3);
+        }
     }
 
     public void ReturnToMenu() {
         lcState = LCState.SwitchScene;
-        //nextScene = MainMenu;
+        nextLevel = "MainMenu";
         fader.FadeOut(2);
-
     }
 
     public void Notify() {
         switch (lcState) {
             case LCState.SwitchScene:
                 // transition to next Scene
+                SceneManager.LoadScene(nextLevel);
                 break;
             case LCState.StartGame:
                 splashAnim.SetTrigger("StartSplash");
+                break;
+            case LCState.CloseApplication:
+                Application.Quit();
                 break;
             case LCState.RestartGame:
                 // reset all things
@@ -230,6 +237,7 @@ public class LevelController : MonoBehaviour {
     public void SpawnPeople() {
         SpawnPoints.AddRange(GameObject.FindGameObjectsWithTag("Respawn"));
         List<GameObject> toRemove = new List<GameObject>();
+
         foreach (GameObject point in SpawnPoints) {
             Transform root = GameObject.Find("NPCs").transform;
             int chance = UnityEngine.Random.Range(0, 100);
@@ -241,22 +249,21 @@ public class LevelController : MonoBehaviour {
                 int range = Character.MOOD_RANGE / 3;
                 c.mood = UnityEngine.Random.Range(-range, range);                                               // random mood
 
-                GameObject Skin = npc.transform.Find("Sprites/Skin").gameObject;
-                GameObject Hair = npc.transform.Find("Sprites/Hair").gameObject;
-                GameObject Clothes = npc.transform.Find("Sprites/Clothes").gameObject;
+
                 npc.GetComponent<AIMovement>().canMove = false;
 
                 int gender = UnityEngine.Random.Range(0, 1);                                                    // random gender
-                Skin.GetComponent<SpriteRenderer>().sprite = attributes[UnityEngine.Random.Range(0, 4) + 20];   // random skin
-                Hair.GetComponent<SpriteRenderer>().sprite = attributes[gender + 1];                // gender hair
-                Clothes.GetComponent<SpriteRenderer>().sprite = attributes[gender + 6];             // gender clothes
+                c.Skin.sprite = attributes[UnityEngine.Random.Range(0, 4) + 20];   // random skin
+                c.Hair.GetComponent<SpriteRenderer>().sprite = attributes[gender + 1];                // gender hair
+                c.Clothes.GetComponent<SpriteRenderer>().sprite = attributes[gender + 6];             // gender clothes
                 npc.SetActive(true);
                 npc.transform.SetParent(root);
 
                 toRemove.Add(point);
             }
+            break;
         }
-
+        
         // spawn player in random leftover spawn point
         SpawnPoints = SpawnPoints.Except(toRemove).ToList();
         if (player != null) {
@@ -266,16 +273,16 @@ public class LevelController : MonoBehaviour {
         }
 
         // spawn eneme in random leftover spawn point
-        for (int i = 0; i < enemies && SpawnPoints.Count>0; i++) {
-            int num = UnityEngine.Random.Range(0, SpawnPoints.Count - 1);
-            GameObject enemy = GameObject.Instantiate(reference.gameObject, SpawnPoints[num].transform.position,
-                Quaternion.identity);
-            Character eChar = enemy.GetComponent<Character>();
-            eChar.type = Character.CharacterClass.bibleThumper;
-            enemy.transform.SetParent(GameObject.Find("NPCs").transform);
-            enemy.SetActive(true);
-            SpawnPoints.RemoveAt(num);
-        }
+        //for (int i = 0; i < enemies; i++) {
+        //    int num = UnityEngine.Random.Range(0, SpawnPoints.Count - 1);
+            //GameObject enemy = GameObject.Instantiate(reference.gameObject, SpawnPoints[num].transform.position,
+            //    Quaternion.identity);
+            //Character eChar = enemy.GetComponent<Character>();
+            //eChar.type = Character.CharacterClass.bibleThumper;
+            //enemy.transform.SetParent(GameObject.Find("NPCs").transform);
+            //enemy.SetActive(true);
+            //SpawnPoints.RemoveAt(num);
+        //}
     }
     
     public void TallyAgonyConversion() {

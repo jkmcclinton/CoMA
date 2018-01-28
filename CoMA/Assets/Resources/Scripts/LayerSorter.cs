@@ -40,7 +40,11 @@ public class LayerSorter : MonoBehaviour {
 
 	void Update () {
 		for (int i = 0; i < transform.childCount; i++) {
-			transform.GetChild (i).GetComponent<SpriteRenderer> ().sortingOrder = (-10 * Mathf.RoundToInt (200 * transform.position.y) - i);
+            int l = (-10 * Mathf.RoundToInt(200 * transform.position.y) - i);
+            Transform t = transform.GetChild(i);
+            t.GetComponent<SpriteRenderer> ().sortingOrder = l;
+            if (t.gameObject.name.ToLower().Equals("clothes"))
+                t.GetComponent<TrailRenderer>().sortingOrder = l;
 		}
 	}
 	
