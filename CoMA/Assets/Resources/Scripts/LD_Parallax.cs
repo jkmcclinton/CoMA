@@ -12,6 +12,7 @@ public class LD_Parallax : MonoBehaviour {
     
     private Vector3 levelSize;
     public Vector2 length;
+	public Vector2 origin;
 
     //静的データを設定します
     void Start() {
@@ -25,6 +26,7 @@ public class LD_Parallax : MonoBehaviour {
 		levelSize =100* new Vector2(左.position.x + length.x / 2,
              下.position.y + length.y / 2);
 		length *= 100;
+		origin = new Vector2 (左.position.x + length.x / 2, 左.position.y - length.y / 2);
     }
 
     //写真はプレーヤーに移動します

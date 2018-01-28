@@ -7,7 +7,7 @@ public class AIMovement : BaseMovement {
 
 	public float time = 0.0f;
 	public float moveSpeed = 0.03f;
-	private Vector3 targetPos = Vector3.zero;
+	private Vector3 targetPos;
 	public enum AIState { Idle, Talk, Seek, Enforce };
 	public AIState state;
 
@@ -16,6 +16,7 @@ public class AIMovement : BaseMovement {
 
 	// Use this for initialization
 	void Start () {
+		targetPos = transform.position;
 		character = GetComponent<Character> ();
 		switch (character.type) {
 		case Character.CharacterClass.normie:
