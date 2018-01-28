@@ -198,7 +198,26 @@ public class LevelController : MonoBehaviour {
     /// <param name="t"></param>
     /// <returns></returns>
     public static string formatTime(float t) {
-        return (t < 60) ? "00" : f(2, t / 60) + ":" + f(2, t % 60);
+		
+		string text = "";
+		if (t < 60) {
+			text += "00:";
+		} else if (t < 120) {
+			text += "01:";
+		} else if (t < 180) {
+			text += "02:";
+		} else if (t < 240) {
+			text += "03:";
+		} else if (t < 300) {
+			text += "04:";
+		} else if (t < 360) {
+			text += "05:";
+		}
+		text += (f(2, (int)(t) % 60)).ToString ();
+		return text;
+
+
+		//return (t < 60) ? "00" : f(2, t / 60) + ":" + f(2, t % 60);
     }
 
     public static string f(int min, float t) {
