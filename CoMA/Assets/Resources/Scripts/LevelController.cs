@@ -17,7 +17,7 @@ public class LevelController : MonoBehaviour {
     private List<GameObject> SpawnPoints;
     private List<Character> NPCs;
     private Sprite[] attributes;
-	private bool[,] navMap;
+	public bool[,] navMap;
 
     public float time { get { return gameTimer; } }
     public void runMe() { gameRunning = true; }
@@ -253,15 +253,80 @@ public class LevelController : MonoBehaviour {
         this.JoyConversionCount++;
     }
 
-	public bool[,] generateNavMap(){
+
+
+
+
+	public bool[,] generateNavMap () {
+		float indexToPos = 1 / 10;
+		int posToIndex = 10;
+
+		Vector2 mapOrigin = Vector2.zero;
+		Vector2 left = (Vector2)transform.GetChild (0).GetChild (0).position;
+		Vector2 right = (Vector2)transform.GetChild (0).GetChild (1).position;
+		Vector2 up = (Vector2)transform.GetChild (0).GetChild (2).position;
+		Vector2 down = (Vector2)transform.GetChild (0).GetChild (3).position;
+		Vector2 mapSize = new Vector2 ((right.x - left.x), (up.y - down.y));
+		//Vector2 posToIndex = new Vector2 (1 / samplesPerUnitX, 1 / samplesPerUnitY);
+		//Vector2 indexToPos = new Vector2 (samplesPerUnitX, samplesPerUnitY);
+
+		navMap = new bool[Mathf.RoundToInt(mapSize.x * posToIndex) + 1, Mathf.RoundToInt(mapSize.y * posToIndex) + 1];
+		print ("Map Size: " + mapSize);
+		print ("NavMap Size: [" + navMap.GetLength (0) + " ," + navMap.GetLength (1) + "]");
+
+		for (int i = 0; i < navMap.GetLength(0); i++) {
+			for (int j = 0; j < navMap.GetLength(1); j++) {
+				navMap [i, j] = false;
+			}
+		}
+
+		BoxCollider2D[] currentCols = FindObjectsOfType<BoxCollider2D> ();
+
+		foreach (BoxCollider2D col in currentCols) {
+			if (col.gameObject.layer != LayerMask.NameToLayer ("Default"))
+				continue;
+
+			Vector2 colPos = col.transform.TransformPoint (col.offset);
+			Vector2 colSize = col.size;
+			Vector2 gridUL = new Vector2(colPos.x - colSize.x, colPos.x + colSize.y);
+			ULs.Add (gridUL);
+			Vector2 gridUR = new Vector2(colPos.x + colSizes.x, colPos.x + colSize.y);
+			Vector2 gridLL = new Vector2(colPos.x - colSize.x, colPos.x - colSize.y);
+			Vector2 gridLR = new Vector2(colPos.x + colSize.x, colPos.x - colSize.y);
+
+			print ("UL: " + gridUL + "\tUR: " + gridUR + "\tLL: " + gridLL + "LR: " + gridLR);
+
+			navMap[Mathf.RoundToInt(gridUL.x * posToIndex + mapSize.x / 2), Mathf.RoundToInt(gridUL.y * posToIndex + mapSize.y / 2)] = true;
+			navMap[Mathf.RoundToInt(gridUR.x * posToIndex + mapSize.x / 2), Mathf.RoundToInt(gridUR.y * posToIndex + mapSize.y / 2)] = true;
+			navMap[Mathf.RoundToInt(gridLL.x * posToIndex + mapSize.x / 2), Mathf.RoundToInt(gridLL.y * posToIndex + mapSize.y / 2)] = true;
+			navMap[Mathf.RoundToInt(gridLR.x * posToIndex + mapSize.x / 2), Mathf.RoundToInt(gridLR.y * posToIndex + mapSize.y / 2)] = true;
+
+		}
+
+		return navMap;
+	}
+
+	List<Vector2> ULs;
+
+	void OnDrawGizmos () {
+		Gizmos.color = Color.red;
+
+		for (int i = 0; i < max; i++) {
+			
+		}
+	}
+
+	/*
+	public bool[,] generateNavMap() {
+		float resolution = 10f;
 		Vector2 originPoint = parallax.origin;
 		Vector2 boundary = parallax.length;
 		Vector2 colliderSize = new Vector2 (0, 0);
 		Vector2 colliderPosition = new Vector2(0, 0);
 		// Upper-right, Upper-left, Lower-right, Lower-left
 		Vector2 colliderUR, colliderUL, colliderLR, colliderLL;
-		float boundaryX = boundary.x / 10.0f;
-		float boundaryY = boundary.y / 10.0f;
+		float boundaryX = boundary.x / resolution;
+		float boundaryY = boundary.y / resolution;
 
 		bool[,] navMap = new bool[Mathf.RoundToInt(Mathf.Abs(boundaryX)), Mathf.RoundToInt(Mathf.Abs(boundaryY))];
 		// Initially initialize the boolean map to all false (no collisions).
@@ -279,10 +344,12 @@ public class LevelController : MonoBehaviour {
 
 			// Multiplied by a factor of 10 to account for the divide-by-10 in the original part of the function.
 			// The factor is halved for size (due to how colliders work).
-			colliderUR = new Vector2(((colliderPosition.x * 10) + (colliderSize.x * 5)), ((colliderPosition.y * 10) + (colliderSize.y * 5)));
-			colliderUL = new Vector2(((colliderPosition.x * 10) - (colliderSize.x * 5)), ((colliderPosition.y * 10) + (colliderSize.y * 5)));
-			colliderLL = new Vector2(((colliderPosition.x * 10) - (colliderSize.x * 5)), ((colliderPosition.y * 10) - (colliderSize.y * 5)));
-			colliderLR = new Vector2(((colliderPosition.x * 10) + (colliderSize.x * 5)), ((colliderPosition.y * 10) - (colliderSize.y * 5)));
+//			colliderUR = new Vector2(((colliderPosition.x * resolution) + (colliderSize.x * 5)), ((colliderPosition.y * resolution) + (colliderSize.y * 5)));
+//			colliderUL = new Vector2(((colliderPosition.x * resolution) - (colliderSize.x * 5)), ((colliderPosition.y * resolution) + (colliderSize.y * 5)));
+//			colliderLL = new Vector2(((colliderPosition.x * resolution) - (colliderSize.x * 5)), ((colliderPosition.y * resolution) - (colliderSize.y * 5)));
+//			colliderLR = new Vector2(((colliderPosition.x * resolution) + (colliderSize.x * 5)), ((colliderPosition.y * resolution) - (colliderSize.y * 5)));
+			colliderUR 
+
 
 			//Mathf.RoundToInt (colliderUR.x); Mathf.RoundToInt (colliderUR.y);
 			//Mathf.RoundToInt (colliderUL.x); Mathf.RoundToInt (colliderUL.y);
@@ -298,5 +365,5 @@ public class LevelController : MonoBehaviour {
 		}
 
 		return navMap;
-	}
+	}*/
 }

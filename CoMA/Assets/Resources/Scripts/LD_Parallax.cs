@@ -27,6 +27,7 @@ public class LD_Parallax : MonoBehaviour {
              下.position.y + length.y / 2);
 		length *= 100;
 		origin = new Vector2 (左.position.x + length.x / 2, 左.position.y - length.y / 2);
+		print ("Level Size: " + levelSize);
     }
 
     //写真はプレーヤーに移動します
