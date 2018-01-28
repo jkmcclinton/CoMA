@@ -248,7 +248,7 @@ public class LevelController : MonoBehaviour {
         foreach (GameObject point in SpawnPoints) {
             Transform root = GameObject.Find("NPCs").transform;
             int chance = UnityEngine.Random.Range(0, 100);
-            if (chance < 100) {
+            if (chance < 60) {
                 GameObject npc = GameObject.Instantiate(reference.gameObject,
                     point.transform.position, Quaternion.identity);
                 Character c = npc.GetComponent<Character>();
@@ -272,23 +272,23 @@ public class LevelController : MonoBehaviour {
         
         // spawn player in random leftover spawn point
         SpawnPoints = SpawnPoints.Except(toRemove).ToList();
-        if (player != null) {
+        if (player != null && SpawnPoints.Count>0) {
             int num = UnityEngine.Random.Range(0, SpawnPoints.Count - 1);
             player.transform.position = SpawnPoints[num].transform.position;
             SpawnPoints.RemoveAt(num);
         }
 
-        // spawn eneme in random leftover spawn point
-        //for (int i = 0; i < enemies; i++) {
-        //    int num = UnityEngine.Random.Range(0, SpawnPoints.Count - 1);
-            //GameObject enemy = GameObject.Instantiate(reference.gameObject, SpawnPoints[num].transform.position,
-            //    Quaternion.identity);
-            //Character eChar = enemy.GetComponent<Character>();
-            //eChar.type = Character.CharacterClass.bibleThumper;
-            //enemy.transform.SetParent(GameObject.Find("NPCs").transform);
-            //enemy.SetActive(true);
-            //SpawnPoints.RemoveAt(num);
-        //}
+        //spawn eneme in random leftover spawn point
+        for (int i = 0; i < enemies; i++) {
+            int num = UnityEngine.Random.Range(0, SpawnPoints.Count - 1);
+            GameObject enemy = GameObject.Instantiate(reference.gameObject, SpawnPoints[num].transform.position,
+                Quaternion.identity);
+            Character eChar = enemy.GetComponent<Character>();
+            eChar.type = Character.CharacterClass.bibleThumper;
+            enemy.transform.SetParent(GameObject.Find("NPCs").transform);
+            enemy.SetActive(true);
+            SpawnPoints.RemoveAt(num);
+        }
     }
     
     public void TallyAgonyConversion() {
