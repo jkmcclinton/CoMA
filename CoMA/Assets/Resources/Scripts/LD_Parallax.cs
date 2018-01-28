@@ -18,10 +18,10 @@ public class LD_Parallax : MonoBehaviour {
     //静的データを設定します
     void Start() {
         カム = GameObject.Find("Main Camera").GetComponent<Camera>();
-        Transform 左 = transform.FindChild("左");
-        Transform 右 = transform.FindChild("右");
-        Transform 上 = transform.FindChild("上"); 
-        Transform 下 = transform.FindChild("下"); 
+        Transform 左 = transform.Find("左");
+        Transform 右 = transform.Find("右");
+        Transform 上 = transform.Find("上"); 
+        Transform 下 = transform.Find("下"); 
 
         GameObject main = GameObject.Find("メイン");
         if (main == null) return;
