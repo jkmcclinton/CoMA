@@ -45,7 +45,7 @@ public class NavGrid : MonoBehaviour {
         Vector2 percent = new Vector2(Mathf.Clamp01((pos.x+worldSize.x/2f)/worldSize.x),
             Mathf.Clamp01((pos.y + worldSize.y / 2f) / worldSize.y));
 
-        int x = Mathf.RoundToInt((mapSize.x - 1f) * percent.x);
+        int x = Mathf.RoundToInt((mapSize.x - 3f) * percent.x);
         int y = Mathf.RoundToInt((mapSize.y - 1f) * percent.y);
         return navMap[x, y];
     }

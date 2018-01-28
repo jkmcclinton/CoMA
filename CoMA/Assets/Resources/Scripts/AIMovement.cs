@@ -7,6 +7,7 @@ using UnityEngine;
 public class AIMovement : BaseMovement {
 
 	public float time = 0.0f;
+	public float pathTime = 5.0f;
 	public float moveSpeed = 0.03f;
 	public Vector3 targetPos;
 	public enum AIState { Idle, Talk, Seek, Enforce };
@@ -52,20 +53,20 @@ public class AIMovement : BaseMovement {
 		}
 
 		if (canMove) {
-			if (path != null && path.Count > 0) {
-				//if distance from first is < threshold,
-					//remove
-				// else move to thresh
+			
+			if (path != null && path.Count > 0 && pathTime > 0f) {
+				// If it takes >5 seconds (stuck on wall) just find a new path entirely.
+				pathTime -= Time.deltaTime;
 
-				if (Vector3.Distance (transform.position, path [0].loc) <= 0.01f) {
+				if (Vector3.Distance (transform.position, path [0].loc) <= 0.001f) {
 					path.RemoveAt(0);					
 				} else {
 					transform.position = Vector2.MoveTowards (transform.position, path [0].loc, moveSpeed);
 				}
-			} else if (path == null || path.Count == 0) {
+			} else if (path == null || path.Count == 0 || pathTime <= 0f) {
+				pathTime = 5.0f;
 				state = AIState.Seek;
 				FindPath (transform.position, targetPos);
-				print ("Path found!");
 			}
             //transform.position = Vector2.MoveTowards(transform.position, targetPos, 0.02f);
         }
@@ -92,7 +93,7 @@ public class AIMovement : BaseMovement {
 			targetPos.x = (transform.position.x + Random.Range (-1.5f, 1.5f));
 			targetPos.y = (transform.position.z + Random.Range (-1.5f, 1.5f));
 			state = AIState.Idle;
-			time = Random.Range (3.0f, 5.0f);
+			time = Random.Range (2.5f, 3.25f);
 
 			break;
 		case AIState.Talk:
@@ -162,7 +163,6 @@ public class AIMovement : BaseMovement {
 
 
     void RetracePath(NavGrid.Node startNode, NavGrid.Node endNode) {
-		print ("tracer sux");
         List<NavGrid.Node> path = new List<NavGrid.Node>();
         NavGrid.Node currentNode = endNode;
 
