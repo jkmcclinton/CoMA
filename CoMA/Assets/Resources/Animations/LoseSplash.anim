@@ -386,7 +386,7 @@ AnimationClip:
   m_GenerateMotionCurves: 0
   m_Events:
   - time: 2.3166666
-    functionName: showGOMenu
+    functionName: KILL
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
