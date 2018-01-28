@@ -84,6 +84,18 @@ public class Character : MonoBehaviour {
 		}
 	}
 
+	public virtual void InfectAoE (bool active, bool decrement) {
+		if (active) {
+			if (!beingInfected) {
+				StartCoroutine (InfectAoE (decrement));
+			}
+		} else {
+			StopCoroutine ("InfectAoE");
+			beingInfected = false;
+			GetComponent<BaseMovement> ().canMove = true;
+		}
+	}
+
 	public IEnumerator Infect (bool decrement) {
 		beingInfected = true;
 		GetComponent<BaseMovement> ().canMove = false;
@@ -95,6 +107,21 @@ public class Character : MonoBehaviour {
 
 			if (Mathf.Abs (mood) < MOOD_RANGE) {
 				mood += (decrement ? -1 : 1);
+			}
+		}
+	}
+
+	public IEnumerator InfectAoE (bool decrement) {
+		beingInfected = true;
+
+		while (true) {
+			// Instant effect - target mood +- 2.
+			yield return new WaitForSeconds (0f);
+			if (!beingInfected)
+				break;
+
+			if (Mathf.Abs (mood) < MOOD_RANGE) {
+				mood += (decrement ? -2 : 2);
 			}
 		}
 	}

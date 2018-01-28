@@ -50,13 +50,22 @@ public class Infect : MonoBehaviour {
 				CancelInvoke ("GetRandomSpeech");
 			}
 		}
+
+		if (Input.GetButton ("AoEAttack")) {
+			Debug.Log ("AoE attack!");
+			Invoke ("GetRandomSpeech", 0f);
+			if (!target) {
+				target.transform.parent.GetComponent<Character> ().Infect (true, true);
+				infecting = true;
+			}
+		}
 	}
 
 	void GetRandomSpeech () {
-		int val = Random.Range (0, 10);
+		int val = Random.Range (0, 13);
 
 		while (val == lastSpeech) {
-			val = Random.Range (0, 10);
+			val = Random.Range (0, 13);
 		}
 
 		switch (val) {
@@ -82,13 +91,22 @@ public class Infect : MonoBehaviour {
 			infectingSpeech = "At some point someone will\nsay your name for the last time.";
 			break;
 		case 7:
-			infectingSpeech = "I want Chik-Fil-A but it's sunday.";
+			infectingSpeech = "I want Chik-Fil-A but it's Sunday.";
 			break;
 		case 8:
 			infectingSpeech = "You will never escape your cubicle.";
 			break;
 		case 9:
 			infectingSpeech = "The Jersey Shore was a wildly\nprofitable show.";
+			break;
+		case 10:
+			infectingSpeech = "Did you know that the average pay raise\nno longer accounts for cost of living increases?";
+			break;
+		case 11:
+			infectingSpeech = "Why are we here? Just to suffer?";
+			break;
+		case 12:
+			infectingSpeech = "Do you think God stays in heaven\nbecause he, too, lives in fear of what he's created?";
 			break;
 		default:
 			infectingSpeech = "Shoutout to SGD@UVA for the dank\nmemes and good-looking members ;)";
