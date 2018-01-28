@@ -1024,7 +1024,7 @@ Prefab:
     - target: {fileID: 114883791270954330, guid: 71bf37660f9ba4df3a32380c1d1bf5ca,
         type: 2}
       propertyPath: LevelTime
-      value: 403.16
+      value: 180
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 71bf37660f9ba4df3a32380c1d1bf5ca, type: 2}

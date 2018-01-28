@@ -251,8 +251,8 @@ public class LevelController : MonoBehaviour {
 				chosenType = bible;
 			}
 
-            if (chance < 100) {
-				GameObject npc = GameObject.Instantiate(chosenType.gameObject,
+            if (chance < 50) {
+                GameObject npc = GameObject.Instantiate(reference.gameObject,
                     point.transform.position, Quaternion.identity);
                 Character c = npc.GetComponent<Character>();
                 NPCs.Add(c);
