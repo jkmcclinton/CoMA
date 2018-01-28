@@ -7,7 +7,7 @@ using UnityEngine;
 public class AIMovement : BaseMovement {
 
 	public float time = 0.0f;
-	public float pathTime = 5.0f;
+	public float pathTime = 3.0f;
 	public float moveSpeed = 0.03f;
 	public Vector3 targetPos;
 	public enum AIState { Idle, Talk, Seek, Enforce };
@@ -35,7 +35,7 @@ public class AIMovement : BaseMovement {
 			break;
 		case Character.CharacterClass.bibleThumper:
 		case Character.CharacterClass.meanie:
-			moveSpeed = 0.005f;		// Enforcers move slower than civilians due to the fact that they're constantly moving.
+			moveSpeed = 0.015f;		// Enforcers move slower than civilians due to the fact that they're constantly moving.
 			state = AIState.Enforce;
 			break;
 		default:
@@ -86,12 +86,18 @@ public class AIMovement : BaseMovement {
 			// Else: go randomly.
 
 			// Case 1: Mood is not low. Search for a nearby person.
-
 			// Case 2: Mood is low. Search for nearby happy person.
-
 			// Case 3: Nobody is nearby. Move within random location.
-			targetPos.x = (transform.position.x + Random.Range (-1.5f, 1.5f));
-			targetPos.y = (transform.position.z + Random.Range (-1.5f, 1.5f));
+
+			RaycastHit2D[] nearbyPeople = Physics2D.CircleCastAll (transform.position, 3.0f, Vector2.zero, 0.0f, LayerMask.NameToLayer ("NPC"));
+			if (nearbyPeople.Length != 0) {
+				targetPos = nearbyPeople[0].point;
+				Debug.Log ("Nearby person found!!");
+			} else {
+				targetPos.x = (transform.position.x + Random.Range (-1.5f, 1.5f));
+				targetPos.y = (transform.position.z + Random.Range (-1.5f, 1.5f));
+				Debug.Log ("Random position!");
+			}
 			state = AIState.Idle;
 			time = Random.Range (2.5f, 3.25f);
 
@@ -108,7 +114,6 @@ public class AIMovement : BaseMovement {
 					targetPos.x = target.transform.position.x + Random.Range(-0.5f, 0.5f);
 					targetPos.y = target.transform.position.y + Random.Range(-0.5f, 0.5f);
 					time = Random.Range (0.5f, 1.5f);
-					break;
 				}
 			}
 			break;
