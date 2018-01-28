@@ -15,6 +15,8 @@ public class AnimController : MonoBehaviour {
 
     private Sprite[] sprites;
 
+
+
 	// Use this for initialization
 	void Start () {
         this.character = GetComponent<Character>();
@@ -34,14 +36,27 @@ public class AnimController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         anim.SetBool("Moving", Mathf.Abs(body.velocity.magnitude) > .01f );
-        face.flipX = body.velocity.x < 0;
-        hair.flipX = body.velocity.x < 0;
-        skin.flipX = body.velocity.x < 0;
-        clothes.flipX = body.velocity.x < 0;
+		if (body.velocity.x < -Time.deltaTime) {
+			face.flipX = true;
+			hair.flipX = true;
+			skin.flipX = true;
+			clothes.flipX = true;
+		} else if (body.velocity.x > Time.deltaTime) {
+			face.flipX = false;
+			hair.flipX = false;
+			skin.flipX = false;
+			clothes.flipX = false;
+		}
         
         // set the face sprite of the Person to reflect their mood
         int offset = 10;
         int mood = (int)(character.mood + Character.MOOD_RANGE) * (MOOD_TYPE_COUNT) / (2 * Character.MOOD_RANGE+1) + offset;
+		if (face.sprite != sprites [mood]) {
+			if (tag != "Player" && GetComponent<Character>().beingInfected) {
+				ParticleEffect ();
+			}
+		}
+
         face.sprite = sprites[mood];
 	}
 
@@ -50,4 +65,8 @@ public class AnimController : MonoBehaviour {
             Physics2D.IgnoreCollision(collision.gameObject.GetComponent<Collider2D>(), 
                 GetComponent<Collider2D>());
     }
+
+	private void ParticleEffect () {
+		GetComponent<ParticleSystem> ().Play ();
+	}
 }

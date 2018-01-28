@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(LD_Parallax))]
 public class LevelController : MonoBehaviour {
     
     /// <summary> how long the game goes until the win condition is checked </summary>
@@ -16,6 +17,7 @@ public class LevelController : MonoBehaviour {
     private List<GameObject> SpawnPoints;
     private List<Character> NPCs;
     private Sprite[] attributes;
+	private bool[,] navMap;
 
     public float time { get { return gameTimer; } }
     public void runMe() { gameRunning = true; }
@@ -30,6 +32,8 @@ public class LevelController : MonoBehaviour {
 
     /// <summary> refernce to NPC prefab  </summary>
     private Character reference;
+
+	private LD_Parallax parallax;
 
     // list of runtime statistics
     /// <summary> number of times player has converted people </summary>
@@ -55,6 +59,7 @@ public class LevelController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		parallax = FindObjectOfType<LD_Parallax> ();
         fader = GameObject.FindObjectOfType<FadeController>();
         SpawnPoints = new List<GameObject>();
         NPCs = new List<Character>();
@@ -64,6 +69,7 @@ public class LevelController : MonoBehaviour {
 
         cubicle = Resources.Load<GameObject>("Prefabs/Cubicle");
         SpawnCubicles();
+		navMap = generateNavMap ();
         reference = Resources.Load<GameObject>("Prefabs/NPC").GetComponent<Character>();
         if (reference!=null) SpawnPeople();
         gameTimer = LevelTime;
@@ -246,4 +252,51 @@ public class LevelController : MonoBehaviour {
     public void TallyJoyConversion() {
         this.JoyConversionCount++;
     }
+
+	public bool[,] generateNavMap(){
+		Vector2 originPoint = parallax.origin;
+		Vector2 boundary = parallax.length;
+		Vector2 colliderSize = new Vector2 (0, 0);
+		Vector2 colliderPosition = new Vector2(0, 0);
+		// Upper-right, Upper-left, Lower-right, Lower-left
+		Vector2 colliderUR, colliderUL, colliderLR, colliderLL;
+		float boundaryX = boundary.x / 10.0f;
+		float boundaryY = boundary.y / 10.0f;
+
+		bool[,] navMap = new bool[Mathf.RoundToInt(Mathf.Abs(boundaryX)), Mathf.RoundToInt(Mathf.Abs(boundaryY))];
+		// Initially initialize the boolean map to all false (no collisions).
+		for (int x = 0; x < navMap.GetLength (0); x++) {
+			for (int y = 0; y < navMap.GetLength (1); y++) {
+				navMap [x, y] = false;
+			}
+		}
+
+		BoxCollider2D[] currentCols = FindObjectsOfType<BoxCollider2D> ();
+
+		foreach (BoxCollider2D boxBounds in currentCols){
+			colliderPosition = boxBounds.transform.position;
+			colliderSize = boxBounds.size;
+
+			// Multiplied by a factor of 10 to account for the divide-by-10 in the original part of the function.
+			// The factor is halved for size (due to how colliders work).
+			colliderUR = new Vector2(((colliderPosition.x * 10) + (colliderSize.x * 5)), ((colliderPosition.y * 10) + (colliderSize.y * 5)));
+			colliderUL = new Vector2(((colliderPosition.x * 10) - (colliderSize.x * 5)), ((colliderPosition.y * 10) + (colliderSize.y * 5)));
+			colliderLL = new Vector2(((colliderPosition.x * 10) - (colliderSize.x * 5)), ((colliderPosition.y * 10) - (colliderSize.y * 5)));
+			colliderLR = new Vector2(((colliderPosition.x * 10) + (colliderSize.x * 5)), ((colliderPosition.y * 10) - (colliderSize.y * 5)));
+
+			//Mathf.RoundToInt (colliderUR.x); Mathf.RoundToInt (colliderUR.y);
+			//Mathf.RoundToInt (colliderUL.x); Mathf.RoundToInt (colliderUL.y);
+			//Mathf.RoundToInt (colliderLL.x); Mathf.RoundToInt (colliderLL.y);
+			for (int x = 0; x < (Mathf.RoundToInt (colliderLR.x) - Mathf.RoundToInt (colliderLL.x)); x++) {
+				for (int y = 0; y < (Mathf.RoundToInt (colliderUR.y) - Mathf.RoundToInt (colliderLR.y)); y++) {
+					Debug.Log ("Collision at: " + x + " " + y);
+					//Debug.Log (Mathf.RoundToInt (colliderLL.x) + x);
+					navMap [(Mathf.RoundToInt (colliderLL.x) + x), (Mathf.RoundToInt (colliderLR.y) + y)] = true;
+				}
+			}
+
+		}
+
+		return navMap;
+	}
 }

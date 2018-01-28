@@ -11,6 +11,7 @@ public class PlayerMovement : BaseMovement {
 	// Use this for initialization
 	void Start () {
         body = GetComponent<Rigidbody2D>();
+		Invoke ("AllowMovement", 1f);
 	}
 
 	// Checks every frame.
@@ -22,6 +23,10 @@ public class PlayerMovement : BaseMovement {
 			body.velocity = move;
 		else
 			body.velocity = Vector2.zero;
+	}
+
+	void AllowMovement () {
+		canMove = true;
 	}
 }
 
