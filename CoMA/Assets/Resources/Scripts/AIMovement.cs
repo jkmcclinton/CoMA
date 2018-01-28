@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//using 
 
 [RequireComponent(typeof(Character))]
 public class AIMovement : BaseMovement {
@@ -11,7 +12,14 @@ public class AIMovement : BaseMovement {
 	public enum AIState { Idle, Talk, Seek, Enforce };
 	public AIState state;
 
-	[HideInInspector]
+    NavGrid navmesh;
+    Transform seeker, target;
+
+     void Awake() {
+        navmesh= FindObjectOfType<NavGrid>();
+    }
+
+    [HideInInspector]
 	private Character character;
 
 	// Use this for initialization
@@ -42,8 +50,9 @@ public class AIMovement : BaseMovement {
 		}
 
 		if (canMove) {
-			transform.position = Vector2.MoveTowards (transform.position, targetPos, 0.02f);
-		}
+            FindPath(transform.position, targetPos);
+            //transform.position = Vector2.MoveTowards(transform.position, targetPos, 0.02f);
+        }
 	}
 
 	void updateAI(){
@@ -88,5 +97,69 @@ public class AIMovement : BaseMovement {
 		default:
 			break;
 		}
+
 	}
+    
+    private void FindPath(Vector2 start, Vector2 target) {
+        NavGrid.Node sNode = navmesh.NodeFromWorldPoint(start);
+        NavGrid.Node tNode = navmesh.NodeFromWorldPoint(target);
+
+        List<NavGrid.Node> open = new List<NavGrid.Node>();
+        HashSet<NavGrid.Node> closed = new HashSet<NavGrid.Node>();
+        open.Add(sNode);
+
+        while (open.Count > 0) {
+            for (int i = 1; i < open.Count; i++) {
+                NavGrid.Node currentNode = open[0];
+                if (open[i].f < currentNode.f ||
+                    open[i].f == currentNode.f & open[i].h < currentNode.h) {
+                    currentNode = open[i];
+                }
+
+                open.Remove(currentNode);
+                closed.Add(currentNode);
+
+                if (currentNode == tNode) {
+                    RetracePath(sNode, tNode);
+                    return;
+
+                }
+
+                foreach (NavGrid.Node n in navmesh.GetNeighbors(currentNode)) {
+                    if (!n.walkable || closed.Contains(n)) continue;
+
+                    int newC = currentNode.g + getDistance(currentNode, n);
+                    if (newC < n.g || open.Contains(n)) {
+                        n.g = newC;
+                        n.h = getDistance(n, tNode);
+                        n.parent = currentNode;
+
+                        if (!open.Contains(n))
+                            open.Add(n);
+                    }
+                }
+            }
+        }
+    }
+
+    
+
+    void RetracePath(NavGrid.Node start, NavGrid.Node end) {
+        List <NavGrid.Node > path = new List<NavGrid.Node>();
+        NavGrid.Node current = end;
+        while (current != start) {
+            path.Add(current);
+            current = current.parent;
+        } path.Reverse();
+
+        navmesh.path = path;
+    }
+
+    public int getDistance(NavGrid.Node a, NavGrid.Node b) {
+        Vector2 d = new Vector2(Mathf.Abs(a.grid.x - b.grid.x),
+            Mathf.Abs(a.grid.y - b.grid.y));
+
+        return (int)((d.x > d.y) ? (14 * d.y + 10 * (d.x - d.y)) : 
+            (14 * d.x + 10 * (d.y - d.x)));
+    }
 }

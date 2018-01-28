@@ -39,4 +39,8 @@ public class CanvasController : MonoBehaviour {
         AIMovement[] NPCs = GameObject.Find("NPCs").transform.GetComponentsInChildren<AIMovement>();
         foreach (AIMovement NPC in NPCs) NPC.canMove = true;
     }
+
+    public void EG() {
+        lc.EndGame();
+    }
 }

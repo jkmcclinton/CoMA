@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(LD_Parallax))]
+
 public class LevelController : MonoBehaviour {
     
     /// <summary> how long the game goes until the win condition is checked </summary>
@@ -11,13 +12,14 @@ public class LevelController : MonoBehaviour {
     public float enemies = 1;
     [HideInInspector] public bool isMultiplayer = false;
 
+    NavGrid A_star;
     private GameObject player, cubicle;
     private GameObject nextLevel;
+    private Animator splashAnim;
     FadeController fader;
     private List<GameObject> SpawnPoints;
     private List<Character> NPCs;
     private Sprite[] attributes;
-	public bool[,] navMap;
 
     public float time { get { return gameTimer; } }
     public void runMe() { gameRunning = true; }
@@ -32,9 +34,7 @@ public class LevelController : MonoBehaviour {
 
     /// <summary> refernce to NPC prefab  </summary>
     private Character reference;
-
-	private LD_Parallax parallax;
-
+    
     // list of runtime statistics
     /// <summary> number of times player has converted people </summary>
     private int AgonyConversionCount = 0;
@@ -55,21 +55,26 @@ public class LevelController : MonoBehaviour {
 
     [HideInInspector]
     public LCState lcState = LCState.StartGame;
-    public enum LCState { StartGame, SwitchScene, Doso}
+    public enum LCState { StartGame, SwitchScene, ShowGOMenu, CloseApplication, RestartGame}
 
 	// Use this for initialization
 	void Start () {
-		parallax = FindObjectOfType<LD_Parallax> ();
         fader = GameObject.FindObjectOfType<FadeController>();
+        SplashController splash = FindObjectOfType<SplashController>();
+        splashAnim = splash.GetComponent<Animator>();
         SpawnPoints = new List<GameObject>();
         NPCs = new List<Character>();
         attributes = Resources.LoadAll<Sprite>("Sprites/CoMA People");
         player = GameObject.Find("Player");
         player.GetComponent<PlayerMovement>().canMove = false;
+        A_star = GetComponent<NavGrid>();
 
         cubicle = Resources.Load<GameObject>("Prefabs/Cubicle");
         SpawnCubicles();
-		navMap = generateNavMap ();
+
+        if (A_star != null)
+            A_star.GenerateMap();
+
         reference = Resources.Load<GameObject>("Prefabs/NPC").GetComponent<Character>();
         if (reference!=null) SpawnPeople();
         gameTimer = LevelTime;
@@ -86,25 +91,27 @@ public class LevelController : MonoBehaviour {
                 if (gameTimer <= 0) {
                     if (Mathf.Abs(score) <= TIE_THRESHOLD) {
                         // game is tied! no one wins!
-
+                        splashAnim.SetInteger("WinState", 0);
                         // sudden death?
                     } else if (score > TIE_THRESHOLD) {
                         // enemy wins! majority is happy!
+                        splashAnim.SetInteger("WinState", -1);
                     } else if (score < TIE_THRESHOLD) {
                         // player wins!!! majority is fucked!
+                        splashAnim.SetInteger("WinState", 1);
 
                     }
 
                     // endGame
-                    EndGame();
+                    lcState = LCState.ShowGOMenu;
+                    splashAnim.SetTrigger("TimeSplash");
                 }
             }
 
             if (player.GetComponent<Character>().mood >= MAX_LOSE) {
                 // game over! player has become happy
-
-
-                EndGame();
+                lcState = LCState.ShowGOMenu;
+                splashAnim.SetTrigger("DeathSplash");
             }
 
             // control level
@@ -127,7 +134,18 @@ public class LevelController : MonoBehaviour {
         gameRunning = false;
     }
 
+    public void RestartGame() {
+        lcState = LCState.RestartGame;
+        fader.FadeOut(2);
+    }
+
+    public void QuitGame() {
+
+    }
+
     public void ReturnToMenu() {
+        lcState = LCState.SwitchScene;
+        //nextScene = MainMenu;
         fader.FadeOut(2);
 
     }
@@ -138,9 +156,24 @@ public class LevelController : MonoBehaviour {
                 // transition to next Scene
                 break;
             case LCState.StartGame:
-                Debug.Log("StartSplash");
-                SplashController splash = FindObjectOfType<SplashController>();
-                splash.GetComponent<Animator>().SetTrigger("StartSplash");
+                splashAnim.SetTrigger("StartSplash");
+                break;
+            case LCState.RestartGame:
+                // reset all things
+
+                foreach (Transform npc in GameObject.Find("NPCs").transform) {
+                    GameObject.Destroy(npc.gameObject);
+                }
+
+                Character player = GameObject.Find("Player").GetComponent<Character>();
+                player.mood = player.defaultMood = -Character.MOOD_RANGE;
+                //reset cool downs
+
+                A_star.ResetMap();
+
+                gameTimer = LevelTime;
+                lcState = LCState.StartGame;
+                fader.FadeIn();
                 break;
         }
     }
@@ -159,7 +192,7 @@ public class LevelController : MonoBehaviour {
         if (s.Length < 2) s = "0" + s;
         return s;
     }
-
+    #region Spawn
     public void SpawnCubicles() {
         int count = 0;
         for (int h = 0; h < 3; h++) {
@@ -199,22 +232,22 @@ public class LevelController : MonoBehaviour {
         List<GameObject> toRemove = new List<GameObject>();
         foreach (GameObject point in SpawnPoints) {
             Transform root = GameObject.Find("NPCs").transform;
-            int chance = Random.Range(0, 100);
+            int chance = UnityEngine.Random.Range(0, 100);
             if (chance < 70) {
                 GameObject npc = GameObject.Instantiate(reference.gameObject,
                     point.transform.position, Quaternion.identity);
                 Character c = npc.GetComponent<Character>();
                 NPCs.Add(c);
                 int range = Character.MOOD_RANGE / 3;
-                c.mood = Random.Range(-range, range);                                               // random mood
+                c.mood = UnityEngine.Random.Range(-range, range);                                               // random mood
 
                 GameObject Skin = npc.transform.Find("Sprites/Skin").gameObject;
                 GameObject Hair = npc.transform.Find("Sprites/Hair").gameObject;
                 GameObject Clothes = npc.transform.Find("Sprites/Clothes").gameObject;
                 npc.GetComponent<AIMovement>().canMove = false;
 
-                int gender = Random.Range(0, 1);                                                    // random gender
-                Skin.GetComponent<SpriteRenderer>().sprite = attributes[Random.Range(0, 4) + 20];   // random skin
+                int gender = UnityEngine.Random.Range(0, 1);                                                    // random gender
+                Skin.GetComponent<SpriteRenderer>().sprite = attributes[UnityEngine.Random.Range(0, 4) + 20];   // random skin
                 Hair.GetComponent<SpriteRenderer>().sprite = attributes[gender + 1];                // gender hair
                 Clothes.GetComponent<SpriteRenderer>().sprite = attributes[gender + 6];             // gender clothes
                 npc.SetActive(true);
@@ -227,14 +260,14 @@ public class LevelController : MonoBehaviour {
         // spawn player in random leftover spawn point
         SpawnPoints = SpawnPoints.Except(toRemove).ToList();
         if (player != null) {
-            int num = Random.Range(0, SpawnPoints.Count - 1);
+            int num = UnityEngine.Random.Range(0, SpawnPoints.Count - 1);
             player.transform.position = SpawnPoints[num].transform.position;
             SpawnPoints.RemoveAt(num);
         }
 
         // spawn eneme in random leftover spawn point
         for (int i = 0; i < enemies && SpawnPoints.Count>0; i++) {
-            int num = Random.Range(0, SpawnPoints.Count - 1);
+            int num = UnityEngine.Random.Range(0, SpawnPoints.Count - 1);
             GameObject enemy = GameObject.Instantiate(reference.gameObject, SpawnPoints[num].transform.position,
                 Quaternion.identity);
             Character eChar = enemy.GetComponent<Character>();
@@ -252,118 +285,6 @@ public class LevelController : MonoBehaviour {
     public void TallyJoyConversion() {
         this.JoyConversionCount++;
     }
+    #endregion
 
-
-
-
-
-	public bool[,] generateNavMap () {
-		float indexToPos = 1 / 10;
-		int posToIndex = 10;
-
-		Vector2 mapOrigin = Vector2.zero;
-		Vector2 left = (Vector2)transform.GetChild (0).GetChild (0).position;
-		Vector2 right = (Vector2)transform.GetChild (0).GetChild (1).position;
-		Vector2 up = (Vector2)transform.GetChild (0).GetChild (2).position;
-		Vector2 down = (Vector2)transform.GetChild (0).GetChild (3).position;
-		Vector2 mapSize = new Vector2 ((right.x - left.x), (up.y - down.y));
-		//Vector2 posToIndex = new Vector2 (1 / samplesPerUnitX, 1 / samplesPerUnitY);
-		//Vector2 indexToPos = new Vector2 (samplesPerUnitX, samplesPerUnitY);
-
-		navMap = new bool[Mathf.RoundToInt(mapSize.x * posToIndex) + 1, Mathf.RoundToInt(mapSize.y * posToIndex) + 1];
-		print ("Map Size: " + mapSize);
-		print ("NavMap Size: [" + navMap.GetLength (0) + " ," + navMap.GetLength (1) + "]");
-
-		for (int i = 0; i < navMap.GetLength(0); i++) {
-			for (int j = 0; j < navMap.GetLength(1); j++) {
-				navMap [i, j] = false;
-			}
-		}
-
-		BoxCollider2D[] currentCols = FindObjectsOfType<BoxCollider2D> ();
-
-		foreach (BoxCollider2D col in currentCols) {
-			if (col.gameObject.layer != LayerMask.NameToLayer ("Default"))
-				continue;
-
-			Vector2 colPos = col.transform.TransformPoint (col.offset);
-			Vector2 colSize = col.size;
-			Vector2 gridUL = new Vector2(colPos.x - colSize.x, colPos.x + colSize.y);
-			ULs.Add (gridUL);
-			Vector2 gridUR = new Vector2(colPos.x + colSizes.x, colPos.x + colSize.y);
-			Vector2 gridLL = new Vector2(colPos.x - colSize.x, colPos.x - colSize.y);
-			Vector2 gridLR = new Vector2(colPos.x + colSize.x, colPos.x - colSize.y);
-
-			print ("UL: " + gridUL + "\tUR: " + gridUR + "\tLL: " + gridLL + "LR: " + gridLR);
-
-			navMap[Mathf.RoundToInt(gridUL.x * posToIndex + mapSize.x / 2), Mathf.RoundToInt(gridUL.y * posToIndex + mapSize.y / 2)] = true;
-			navMap[Mathf.RoundToInt(gridUR.x * posToIndex + mapSize.x / 2), Mathf.RoundToInt(gridUR.y * posToIndex + mapSize.y / 2)] = true;
-			navMap[Mathf.RoundToInt(gridLL.x * posToIndex + mapSize.x / 2), Mathf.RoundToInt(gridLL.y * posToIndex + mapSize.y / 2)] = true;
-			navMap[Mathf.RoundToInt(gridLR.x * posToIndex + mapSize.x / 2), Mathf.RoundToInt(gridLR.y * posToIndex + mapSize.y / 2)] = true;
-
-		}
-
-		return navMap;
-	}
-
-	List<Vector2> ULs;
-
-	void OnDrawGizmos () {
-		Gizmos.color = Color.red;
-
-		for (int i = 0; i < max; i++) {
-			
-		}
-	}
-
-	/*
-	public bool[,] generateNavMap() {
-		float resolution = 10f;
-		Vector2 originPoint = parallax.origin;
-		Vector2 boundary = parallax.length;
-		Vector2 colliderSize = new Vector2 (0, 0);
-		Vector2 colliderPosition = new Vector2(0, 0);
-		// Upper-right, Upper-left, Lower-right, Lower-left
-		Vector2 colliderUR, colliderUL, colliderLR, colliderLL;
-		float boundaryX = boundary.x / resolution;
-		float boundaryY = boundary.y / resolution;
-
-		bool[,] navMap = new bool[Mathf.RoundToInt(Mathf.Abs(boundaryX)), Mathf.RoundToInt(Mathf.Abs(boundaryY))];
-		// Initially initialize the boolean map to all false (no collisions).
-		for (int x = 0; x < navMap.GetLength (0); x++) {
-			for (int y = 0; y < navMap.GetLength (1); y++) {
-				navMap [x, y] = false;
-			}
-		}
-
-		BoxCollider2D[] currentCols = FindObjectsOfType<BoxCollider2D> ();
-
-		foreach (BoxCollider2D boxBounds in currentCols){
-			colliderPosition = boxBounds.transform.position;
-			colliderSize = boxBounds.size;
-
-			// Multiplied by a factor of 10 to account for the divide-by-10 in the original part of the function.
-			// The factor is halved for size (due to how colliders work).
-//			colliderUR = new Vector2(((colliderPosition.x * resolution) + (colliderSize.x * 5)), ((colliderPosition.y * resolution) + (colliderSize.y * 5)));
-//			colliderUL = new Vector2(((colliderPosition.x * resolution) - (colliderSize.x * 5)), ((colliderPosition.y * resolution) + (colliderSize.y * 5)));
-//			colliderLL = new Vector2(((colliderPosition.x * resolution) - (colliderSize.x * 5)), ((colliderPosition.y * resolution) - (colliderSize.y * 5)));
-//			colliderLR = new Vector2(((colliderPosition.x * resolution) + (colliderSize.x * 5)), ((colliderPosition.y * resolution) - (colliderSize.y * 5)));
-			colliderUR 
-
-
-			//Mathf.RoundToInt (colliderUR.x); Mathf.RoundToInt (colliderUR.y);
-			//Mathf.RoundToInt (colliderUL.x); Mathf.RoundToInt (colliderUL.y);
-			//Mathf.RoundToInt (colliderLL.x); Mathf.RoundToInt (colliderLL.y);
-			for (int x = 0; x < (Mathf.RoundToInt (colliderLR.x) - Mathf.RoundToInt (colliderLL.x)); x++) {
-				for (int y = 0; y < (Mathf.RoundToInt (colliderUR.y) - Mathf.RoundToInt (colliderLR.y)); y++) {
-					Debug.Log ("Collision at: " + x + " " + y);
-					//Debug.Log (Mathf.RoundToInt (colliderLL.x) + x);
-					navMap [(Mathf.RoundToInt (colliderLL.x) + x), (Mathf.RoundToInt (colliderLR.y) + y)] = true;
-				}
-			}
-
-		}
-
-		return navMap;
-	}*/
 }

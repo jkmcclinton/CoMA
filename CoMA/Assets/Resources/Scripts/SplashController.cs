@@ -13,4 +13,8 @@ public class SplashController : MonoBehaviour {
 	public void startHeader() {
         cc.GetComponent<Animator>().SetTrigger("EnterProgress");
     }
+
+    public void showGOMenu() {
+        cc.GetComponent<Animator>().SetTrigger("GOMenu");
+    }
 }
