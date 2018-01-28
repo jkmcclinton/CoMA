@@ -6,7 +6,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour {
-    
+
+
+    [HideInInspector]
+    public LCState lcState;
+    public LCState defaultState = LCState.StartGame;
+
     /// <summary> how long the game goes until the win condition is checked </summary>
     public float LevelTime = 3*60;
     public float enemies = 1;
@@ -16,7 +21,7 @@ public class LevelController : MonoBehaviour {
     private GameObject player, cubicle;
     private string nextLevel;
     private Animator splashAnim;
-    FadeController fader;
+    private FadeController fader;
     private List<GameObject> SpawnPoints;
     private List<Character> NPCs;
     private Sprite[] attributes;
@@ -48,42 +53,40 @@ public class LevelController : MonoBehaviour {
     public float LevelScore {
         get { return score; }
     }
-    
-    public LevelController(LCState state) {
-        this.lcState = state;
-    }
-
-    [HideInInspector]
-    public LCState lcState = LCState.StartGame;
-    public enum LCState { StartGame, SwitchScene, ShowGOMenu, CloseApplication, RestartGame}
+    public enum LCState { StartGame, SwitchScene, ShowGOMenu, CloseApplication, RestartGame, Nothing}
 
 	// Use this for initialization
 	void Start () {
-        fader = GameObject.FindObjectOfType<FadeController>();
-        SplashController splash = FindObjectOfType<SplashController>();
-        splashAnim = splash.GetComponent<Animator>();
-        SpawnPoints = new List<GameObject>();
-        NPCs = new List<Character>();
-        attributes = Resources.LoadAll<Sprite>("Sprites/CoMA People");
-        player = GameObject.Find("Player");
-        player.GetComponent<PlayerMovement>().canMove = false;
-        A_star = GetComponent<NavGrid>();
+        lcState = defaultState;
+        if (lcState == LCState.Nothing) gameRunning = false;
+            fader = GameObject.FindObjectOfType<FadeController>();
+            SplashController splash = FindObjectOfType<SplashController>();
 
-        cubicle = Resources.Load<GameObject>("Prefabs/Cubicle");
-        SpawnCubicles();
+        if (defaultState != LCState.Nothing) {
+            splashAnim = splash.GetComponent<Animator>();
+            SpawnPoints = new List<GameObject>();
+            NPCs = new List<Character>();
+            attributes = Resources.LoadAll<Sprite>("Sprites/CoMA People");
+            player = GameObject.Find("Player");
+            player.GetComponent<PlayerMovement>().canMove = false;
+            A_star = GetComponent<NavGrid>();
 
-        if (A_star != null)
-            A_star.GenerateMap();
+            cubicle = Resources.Load<GameObject>("Prefabs/Cubicle");
+            SpawnCubicles();
 
-        bible = Resources.Load<GameObject>("Prefabs/Bible").GetComponent<Character>();
-        reference = Resources.Load<GameObject>("Prefabs/NPC").GetComponent<Character>();
-        if (reference!=null) SpawnPeople();
+            if (A_star != null)
+                A_star.GenerateMap();
+
+            bible = Resources.Load<GameObject>("Prefabs/Bible").GetComponent<Character>();
+            reference = Resources.Load<GameObject>("Prefabs/NPC").GetComponent<Character>();
+            if (reference != null) SpawnPeople();
             gameTimer = LevelTime;
+        }
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (gameTimer >= 0 && gameRunning) {
+        if (gameTimer >= 0 && gameRunning && lcState!=LCState.Nothing) {
             if (gameRunning) { 
             // Game-ending checks
 
@@ -148,8 +151,12 @@ public class LevelController : MonoBehaviour {
     }
 
     public void ReturnToMenu() {
+        LoadScene("MainMenu");
+    }
+
+    public void LoadScene(String scene) {
         lcState = LCState.SwitchScene;
-        nextLevel = "MainMenu";
+        nextLevel = scene;
         fader.FadeOut(2);
     }
 
