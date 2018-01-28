@@ -268,7 +268,6 @@ public class LevelController : MonoBehaviour {
 
                 toRemove.Add(point);
             }
-            break;
         }
         
         // spawn player in random leftover spawn point

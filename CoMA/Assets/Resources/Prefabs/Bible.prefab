@@ -463,14 +463,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53a56d4961aa54e85baf86f92bbc034e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  type: 1
   level: {fileID: 0}
   Skin: {fileID: 0}
   Hair: {fileID: 0}
   Face: {fileID: 0}
   Clothes: {fileID: 0}
-  mood: 5
-  defaultMood: 0
+  mood: 10
+  defaultMood: 10
   secondsBetweenRegens: 10
   secondsElapsed: 0
   beingInfected: 0
@@ -499,7 +499,10 @@ MonoBehaviour:
   canMove: 1
   time: 0
   moveSpeed: 0.03
+  targetPos: {x: 0, y: 0, z: 0}
   state: 0
+  seeker: {fileID: 0}
+  target: {fileID: 0}
 --- !u!198 &198945153395144780
 ParticleSystem:
   m_ObjectHideFlags: 1
