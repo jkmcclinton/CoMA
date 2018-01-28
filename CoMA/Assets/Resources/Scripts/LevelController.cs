@@ -260,10 +260,10 @@ public class LevelController : MonoBehaviour {
 		Vector2 colliderPosition = new Vector2(0, 0);
 		// Upper-right, Upper-left, Lower-right, Lower-left
 		Vector2 colliderUR, colliderUL, colliderLR, colliderLL;
-		float boundaryX = boundary.x / 10.0f; float boundaryY = boundary.y / 10.0f;
+		float boundaryX = boundary.x / 10.0f;
+		float boundaryY = boundary.y / 10.0f;
 
 		bool[,] navMap = new bool[Mathf.RoundToInt(Mathf.Abs(boundaryX)), Mathf.RoundToInt(Mathf.Abs(boundaryY))];
-
 		// Initially initialize the boolean map to all false (no collisions).
 		for (int x = 0; x < navMap.GetLength (0); x++) {
 			for (int y = 0; y < navMap.GetLength (1); y++) {
@@ -277,17 +277,21 @@ public class LevelController : MonoBehaviour {
 			colliderPosition = boxBounds.transform.position;
 			colliderSize = boxBounds.size;
 
-			colliderUR = new Vector2(colliderPosition.x + (colliderSize.x / 2), colliderPosition.y + (colliderSize.y / 2));
-			colliderUL = new Vector2(colliderPosition.x - (colliderSize.x / 2), colliderPosition.y + (colliderSize.y / 2));
-			colliderLL = new Vector2(colliderPosition.x - (colliderSize.x / 2), colliderPosition.y - (colliderSize.y / 2));
-			colliderLR = new Vector2(colliderPosition.x + (colliderSize.x / 2), colliderPosition.y - (colliderSize.y / 2));
+			// Multiplied by a factor of 10 to account for the divide-by-10 in the original part of the function.
+			// The factor is halved for size (due to how colliders work).
+			colliderUR = new Vector2(((colliderPosition.x * 10) + (colliderSize.x * 5)), ((colliderPosition.y * 10) + (colliderSize.y * 5)));
+			colliderUL = new Vector2(((colliderPosition.x * 10) - (colliderSize.x * 5)), ((colliderPosition.y * 10) + (colliderSize.y * 5)));
+			colliderLL = new Vector2(((colliderPosition.x * 10) - (colliderSize.x * 5)), ((colliderPosition.y * 10) - (colliderSize.y * 5)));
+			colliderLR = new Vector2(((colliderPosition.x * 10) + (colliderSize.x * 5)), ((colliderPosition.y * 10) - (colliderSize.y * 5)));
 
 			//Mathf.RoundToInt (colliderUR.x); Mathf.RoundToInt (colliderUR.y);
 			//Mathf.RoundToInt (colliderUL.x); Mathf.RoundToInt (colliderUL.y);
 			//Mathf.RoundToInt (colliderLL.x); Mathf.RoundToInt (colliderLL.y);
 			for (int x = 0; x < (Mathf.RoundToInt (colliderLR.x) - Mathf.RoundToInt (colliderLL.x)); x++) {
 				for (int y = 0; y < (Mathf.RoundToInt (colliderUR.y) - Mathf.RoundToInt (colliderLR.y)); y++) {
-					navMap [x, y] = true;
+					Debug.Log ("Collision at: " + x + " " + y);
+					//Debug.Log (Mathf.RoundToInt (colliderLL.x) + x);
+					navMap [(Mathf.RoundToInt (colliderLL.x) + x), (Mathf.RoundToInt (colliderLR.y) + y)] = true;
 				}
 			}
 
