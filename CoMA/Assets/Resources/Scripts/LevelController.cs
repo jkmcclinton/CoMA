@@ -241,7 +241,7 @@ public class LevelController : MonoBehaviour {
         foreach (GameObject point in SpawnPoints) {
             Transform root = GameObject.Find("NPCs").transform;
             int chance = UnityEngine.Random.Range(0, 100);
-            if (chance < 100) {
+            if (chance < 50) {
                 GameObject npc = GameObject.Instantiate(reference.gameObject,
                     point.transform.position, Quaternion.identity);
                 Character c = npc.GetComponent<Character>();

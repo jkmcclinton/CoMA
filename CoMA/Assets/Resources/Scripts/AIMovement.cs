@@ -44,7 +44,6 @@ public class AIMovement : BaseMovement {
 	}
 
 	void Update(){
-
 		// Update AI pathing every time Time hits 0.
 		if (time > 0) {
 			time -= Time.deltaTime;
@@ -107,10 +106,10 @@ public class AIMovement : BaseMovement {
 			break;
 		case AIState.Enforce:
 			// Essentially an uber-seek. Stay ultra close to a target.
-			Character[] charArray = FindObjectsOfType<Character> ();
+			List<Character> charList = FindObjectsOfType<Character> ();
 
-			foreach (Character target in charArray) {
-				if (target.type == Character.CharacterClass.normie) {
+			foreach (Character target in charList) {
+				if (target.type == Character.CharacterClass.normie && target.mood) {
 					targetPos.x = target.transform.position.x + Random.Range(-0.5f, 0.5f);
 					targetPos.y = target.transform.position.y + Random.Range(-0.5f, 0.5f);
 					time = Random.Range (0.5f, 1.5f);
