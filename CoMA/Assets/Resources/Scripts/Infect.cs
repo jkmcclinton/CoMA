@@ -90,10 +90,10 @@ public class Infect : MonoBehaviour {
 	}
 
 	void GetRandomSpeech () {
-		int val = Random.Range (0, 13);
+		int val = Random.Range (0, 17);
 
 		while (val == lastSpeech) {
-			val = Random.Range (0, 13);
+			val = Random.Range (0, 17);
 		}
 
 		switch (val) {
@@ -135,6 +135,18 @@ public class Infect : MonoBehaviour {
 			break;
 		case 12:
 			infectingSpeech = "Do you think God stays in heaven\nbecause he, too, lives in fear of what he's created?";
+			break;
+		case 13:
+			infectingSpeech = "Creating this game is depressing.";
+			break;
+		case 14:
+			infectingSpeech = "Echidnas only live up to 18 years.";
+			break;
+		case 15:
+			infectingSpeech = "6666666666666666666666666666666666";
+			break;
+		case 16:
+			infectingSpeech = "'); DROP TABLE Sanity;-- ";
 			break;
 		default:
 			infectingSpeech = "Shoutout to SGD@UVA for the dank\nmemes and good-looking members ;)";
