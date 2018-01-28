@@ -74,7 +74,7 @@ public class LevelController : MonoBehaviour {
 
         if (A_star != null)
             A_star.GenerateMap();
-
+        
         reference = Resources.Load<GameObject>("Prefabs/NPC").GetComponent<Character>();
         if (reference!=null) SpawnPeople();
         gameTimer = LevelTime;
@@ -203,11 +203,11 @@ public class LevelController : MonoBehaviour {
                     inst.name = "Cubicle" + count.ToString();
 
                     if (h == 0) {
-                        inst.GetComponent<SpriteRenderer>().sortingOrder = -4110;
+						inst.GetComponent<SpriteRenderer>().sortingOrder = -4510;
                     } else if (h == 1) {
-                        inst.GetComponent<SpriteRenderer>().sortingOrder = -110;
+                        inst.GetComponent<SpriteRenderer>().sortingOrder = -360;
                     } else {
-                        inst.GetComponent<SpriteRenderer>().sortingOrder = 3830;
+                        inst.GetComponent<SpriteRenderer>().sortingOrder = 3520;
                     }
 
                     for (int i = 1; i <= inst.transform.childCount; i++) {
