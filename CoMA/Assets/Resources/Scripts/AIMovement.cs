@@ -8,16 +8,18 @@ public class AIMovement : BaseMovement {
 
 	public float time = 0.0f;
 	public float moveSpeed = 0.03f;
-	private Vector3 targetPos;
+	public Vector3 targetPos;
 	public enum AIState { Idle, Talk, Seek, Enforce };
 	public AIState state;
 
     NavGrid navmesh;
-    Transform seeker, target;
+    public Transform seeker, target;
 
      void Awake() {
         navmesh= FindObjectOfType<NavGrid>();
     }
+
+	public List<NavGrid.Node> path;
 
     [HideInInspector]
 	private Character character;
@@ -28,7 +30,7 @@ public class AIMovement : BaseMovement {
 		character = GetComponent<Character> ();
 		switch (character.type) {
 		case Character.CharacterClass.normie:
-			state = AIState.Idle;
+			state = AIState.Seek;
 			break;
 		case Character.CharacterClass.bibleThumper:
 		case Character.CharacterClass.meanie:
@@ -50,7 +52,21 @@ public class AIMovement : BaseMovement {
 		}
 
 		if (canMove) {
-            FindPath(transform.position, targetPos);
+			if (path != null && path.Count > 0) {
+				//if distance from first is < threshold,
+					//remove
+				// else move to thresh
+
+				if (Vector3.Distance (transform.position, path [0].loc) <= 0.01f) {
+					path.RemoveAt(0);					
+				} else {
+					transform.position = Vector2.MoveTowards (transform.position, path [0].loc, moveSpeed);
+				}
+			} else if (path == null || path.Count == 0) {
+				state = AIState.Seek;
+				FindPath (transform.position, targetPos);
+				print ("Path found!");
+			}
             //transform.position = Vector2.MoveTowards(transform.position, targetPos, 0.02f);
         }
 	}
@@ -61,7 +77,6 @@ public class AIMovement : BaseMovement {
 			// Continually move towards target location while not at target.
 			// Idle for 1.5-3 seconds, then seek out another target.
 			if (state == AIState.Idle && transform.position == targetPos) {
-				time = Random.Range (1.5f, 3.0f);
 				state = AIState.Seek;
 			}
 			break;
@@ -77,6 +92,8 @@ public class AIMovement : BaseMovement {
 			targetPos.x = (transform.position.x + Random.Range (-1.5f, 1.5f));
 			targetPos.y = (transform.position.z + Random.Range (-1.5f, 1.5f));
 			state = AIState.Idle;
+			time = Random.Range (3.0f, 5.0f);
+
 			break;
 		case AIState.Talk:
 			// Placeholder for now.
@@ -145,6 +162,7 @@ public class AIMovement : BaseMovement {
 
 
     void RetracePath(NavGrid.Node startNode, NavGrid.Node endNode) {
+		print ("tracer sux");
         List<NavGrid.Node> path = new List<NavGrid.Node>();
         NavGrid.Node currentNode = endNode;
 
@@ -155,6 +173,7 @@ public class AIMovement : BaseMovement {
         path.Reverse();
 
         navmesh.path = path;
+		this.path = path;
     }
 
     int GetDistance(NavGrid.Node nodeA, NavGrid.Node nodeB) {

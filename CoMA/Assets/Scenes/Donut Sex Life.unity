@@ -157,6 +157,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1755593699227372, guid: 10aef20fb4ad9c5458e500661a4c6f2d, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1289431476097998, guid: 10aef20fb4ad9c5458e500661a4c6f2d, type: 2}
       propertyPath: m_IsActive
       value: 0
@@ -804,6 +808,11 @@ Prefab:
         type: 2}
       propertyPath: nodeDiameter
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114883791270954330, guid: 71bf37660f9ba4df3a32380c1d1bf5ca,
+        type: 2}
+      propertyPath: LevelTime
+      value: 403.16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 71bf37660f9ba4df3a32380c1d1bf5ca, type: 2}

@@ -463,7 +463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53a56d4961aa54e85baf86f92bbc034e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  type: 2
   level: {fileID: 0}
   Skin: {fileID: 0}
   Hair: {fileID: 0}

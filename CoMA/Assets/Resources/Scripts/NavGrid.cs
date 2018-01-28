@@ -19,6 +19,7 @@ public class NavGrid : MonoBehaviour {
         //path = new List<Node>();
     }
 
+
     public List<Node> GetNeighbors(Node node) {
         List<Node> n = new List<Node>();
         for(int x = -1; x <= 1; x++) {
@@ -27,7 +28,7 @@ public class NavGrid : MonoBehaviour {
 
                 Vector2 c = new Vector2(node.grid.x + x, node.grid.y + y);
 
-                if(c.x>=0 &&c.x < mapSize.x && c.y >= 0 && c.y >= mapSize.y) {
+                if(c.x>=0 &&c.x < mapSize.x && c.y >= 0 && c.y < mapSize.y) {
                     n.Add(navMap[(int)c.x, (int)c.y]);
                 }
             }
@@ -78,7 +79,8 @@ public class NavGrid : MonoBehaviour {
     
 
     private void OnDrawGizmos() {
-
+		if (path != null)
+			foreach (Node n in path)
         Gizmos.DrawWireCube(transform.position, new Vector3(worldSize.x, worldSize.y,1)); 
         if (navMap != null) {
             Node p = NodeFromWorldPoint(GameObject.Find("Player").transform.position);
@@ -86,12 +88,18 @@ public class NavGrid : MonoBehaviour {
             foreach (Node n in navMap) {
                 
                 Gizmos.color = n.walkable ? Color.green : Color.red;
-                if (p == n || p==C) Gizmos.color = Color.blue;
-                if (path != null)
-                    if (path.Contains(n)) Gizmos.color = Color.black;
+				if (p == n ) Gizmos.color = Color.blue;
+				if (n == C ) Gizmos.color = Color.yellow;
+
                 Gizmos.DrawCube(n.loc,  Vector2.one*nodeRad*1.5f);
             }
-        }
+		}
+		if (path != null) {
+			foreach(Node t in path){
+				Gizmos.color = Color.black;
+				Gizmos.DrawCube(t.loc, Vector2.one*nodeRad*1.5f);
+			}
+		}
     }
 
 
