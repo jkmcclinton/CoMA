@@ -116,13 +116,15 @@ public class Character : MonoBehaviour {
 
 		while (true) {
 			// Instant effect - target mood +- 2.
-			yield return new WaitForSeconds (0f);
+			yield return new WaitForSeconds (5f);
 			if (!beingInfected)
 				break;
 
 			if (Mathf.Abs (mood) < MOOD_RANGE) {
-				mood += (decrement ? -2 : 2);
+				mood += (decrement ? -1 : 1);
 			}
+
+			Collider2D[] FriendsNear = Physics2D.OverlapCircleAll (transform.position, FindObjectOfType<Infect>().aoeRadius, LayerMask.GetMask("Player"));
 		}
 	}
 

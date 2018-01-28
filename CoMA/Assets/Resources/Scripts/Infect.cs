@@ -7,8 +7,10 @@ public class Infect : MonoBehaviour {
 
 	public GameObject target;
 	public float infectRadius = 1f;
+	public float aoeRadius = 10f;
 
-	public Collider2D[] targets;
+	public Collider2D[] normalInfectTargets;
+	public Collider2D[] aoeInfectTargets;
 
 	public LayerMask infectMask;
 	public bool infecting = false;
@@ -19,17 +21,14 @@ public class Infect : MonoBehaviour {
 	void Start () {
 		GetRandomSpeech ();
 	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
-		targets = Physics2D.OverlapCircleAll (transform.position, infectRadius, infectMask);
 
+	void CloseAttack () {
 		if (Input.GetButton ("CloseAttack")) {
 			float minDist = Mathf.Infinity;
 
 			//If there is already a target, don't find a new one
 			if (!target) {
-				foreach (var item in targets) {
+				foreach (var item in normalInfectTargets) {
 					if ((item.transform.position - transform.position).sqrMagnitude < minDist) {
 						target = item.gameObject;
 					}
@@ -41,7 +40,8 @@ public class Infect : MonoBehaviour {
 					InvokeRepeating ("GetRandomSpeech", 0f, 2f);
 				infecting = true;
 			}
-		} else {
+		} 
+		if (Input.GetButtonUp("CloseAttack")) {
 			if (target) {
 				GetComponent<PlayerMovement> ().canMove = true;
 				target.transform.parent.GetComponent<Character> ().Infect (false, true);
@@ -50,15 +50,43 @@ public class Infect : MonoBehaviour {
 				CancelInvoke ("GetRandomSpeech");
 			}
 		}
+	}
 
+	void AoEAttack () {
 		if (Input.GetButton ("AoEAttack")) {
-			Debug.Log ("AoE attack!");
-			Invoke ("GetRandomSpeech", 0f);
-			if (!target) {
-				target.transform.parent.GetComponent<Character> ().Infect (true, true);
+
+			//If there is already a target, don't find a new one
+			if (aoeInfectTargets.Length > 0) {
+				foreach (var item in aoeInfectTargets) {
+					item.transform.parent.GetComponent<Character> ().InfectAoE (true, true);
+				}
+			} else {
+				//GetComponent<PlayerMovement> ().canMove = false;
+
+				if (infecting == false)
+				//	InvokeRepeating ("GetRandomSpeech", 0f, 2f);
 				infecting = true;
 			}
+		} 
+		if (Input.GetButtonUp("AoEAttack")) {
+			if (target) {
+				//GetComponent<PlayerMovement> ().canMove = true;
+				target.transform.parent.GetComponent<Character> ().InfectAoE (false, true);
+				target = null;
+				infecting = false;
+				//CancelInvoke ("GetRandomSpeech");
+			}
 		}
+	}
+	
+	// Update is called once per frame
+	void FixedUpdate () {
+		normalInfectTargets = Physics2D.OverlapCircleAll (transform.position, infectRadius, infectMask);
+		aoeInfectTargets = Physics2D.OverlapCircleAll (transform.position, aoeRadius, infectMask);
+
+		CloseAttack ();
+
+		AoEAttack ();
 	}
 
 	void GetRandomSpeech () {

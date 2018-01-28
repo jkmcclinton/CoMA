@@ -8,6 +8,10 @@ public class MusicCrossfade : MonoBehaviour {
 	[Range(-10, 10)] public int happyMeter = 0;
 	public AudioMixer mixer;
 
+	public AudioClip[] neutralLeadSynthClips;
+	public AudioClip[] sadLeadSynthClips;
+	public AudioClip[] happyLeadSynthClips;
+
 	// Use this for initialization
 	void Start () {
 		
